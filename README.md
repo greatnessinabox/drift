@@ -29,6 +29,7 @@ drift watches your Go codebase in real-time, detects code health degradation, an
 ## Features
 
 - **Live Dashboard** — Full-screen TUI that updates in real-time as you edit code
+- **Sparkline Trends** — Visualize health metrics over the last 10 commits with inline charts
 - **Cyclomatic Complexity** — Identifies your most complex functions using Go AST analysis
 - **Dependency Freshness** — Checks every dependency against the Go module proxy
 - **Architecture Boundaries** — Define import rules and catch violations instantly
@@ -63,6 +64,9 @@ drift report
 
 # Output JSON for CI pipelines
 drift snapshot
+
+# Check health score and fail if below threshold (for CI)
+drift check --fail-under 70
 
 # Create a config file
 drift init
@@ -130,8 +134,9 @@ The AI analyzes your worst-scoring metrics and provides specific, actionable rec
 1. **Analysis Engine** — Parses all `.go` files using `go/ast` to calculate cyclomatic complexity, detect dead code, and map import graphs
 2. **Dependency Checker** — Reads `go.mod` and queries the Go module proxy for latest versions
 3. **File Watcher** — Uses `fsnotify` with 200ms debounce for instant feedback on file changes
-4. **Health Score** — Weighted average of all metrics, with configurable thresholds
-5. **TUI** — Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Lip Gloss](https://github.com/charmbracelet/lipgloss) for a beautiful terminal experience
+4. **History Analyzer** — Uses `go-git` to walk commit history and generate sparkline trends
+5. **Health Score** — Weighted average of all metrics, with configurable thresholds
+6. **TUI** — Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Lip Gloss](https://github.com/charmbracelet/lipgloss) for a beautiful terminal experience
 
 ## Copilot CLI Integration
 
@@ -144,8 +149,20 @@ These work with GitHub Copilot CLI, VS Code Copilot, and the Copilot coding agen
 
 ## CI Integration
 
+Use the `drift check` command with `--fail-under` flag for easy CI integration:
+
 ```yaml
 # GitHub Actions example
+- name: Check codebase health
+  run: |
+    go install github.com/greatnessinabox/drift@latest
+    drift check --fail-under 70
+```
+
+Or use the `snapshot` command for more advanced workflows:
+
+```yaml
+# Advanced CI integration with JSON output
 - name: Check codebase health
   run: |
     go install github.com/greatnessinabox/drift@latest
@@ -162,6 +179,7 @@ These work with GitHub Copilot CLI, VS Code Copilot, and the Copilot coding agen
 - [Lip Gloss](https://github.com/charmbracelet/lipgloss) — Terminal styling
 - [Cobra](https://github.com/spf13/cobra) — CLI framework
 - [fsnotify](https://github.com/fsnotify/fsnotify) — File system notifications
+- [go-git](https://github.com/go-git/go-git) — Git repository access for history trends
 - [Anthropic SDK](https://github.com/anthropics/anthropic-sdk-go) — Claude AI integration
 - [OpenAI SDK](https://github.com/openai/openai-go) — GPT integration
 

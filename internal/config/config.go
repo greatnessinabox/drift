@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Root    string   `yaml:"root"`
-	Exclude []string `yaml:"exclude"`
+	Root     string   `yaml:"root"`
+	Language string   `yaml:"language"` // empty = auto-detect; "go", "typescript", "python", "rust", "java"
+	Exclude  []string `yaml:"exclude"`
 
 	Weights WeightConfig `yaml:"weights"`
 
@@ -53,6 +54,11 @@ func Defaults() *Config {
 			"node_modules",
 			".git",
 			"testdata",
+			"__pycache__",
+			".venv",
+			"target",
+			"dist",
+			"build",
 		},
 		Weights: WeightConfig{
 			Complexity: 0.30,

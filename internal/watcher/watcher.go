@@ -15,27 +15,29 @@ type Event struct {
 }
 
 type Watcher struct {
-	inner   *fsnotify.Watcher
-	root    string
-	exclude []string
-	Events  chan Event
-	Errors  chan error
-	done    chan struct{}
+	inner      *fsnotify.Watcher
+	root       string
+	exclude    []string
+	extensions []string
+	Events     chan Event
+	Errors     chan error
+	done       chan struct{}
 }
 
-func New(root string, exclude []string) (*Watcher, error) {
+func New(root string, exclude []string, extensions []string) (*Watcher, error) {
 	inner, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err
 	}
 
 	w := &Watcher{
-		inner:   inner,
-		root:    root,
-		exclude: exclude,
-		Events:  make(chan Event, 100),
-		Errors:  make(chan error, 10),
-		done:    make(chan struct{}),
+		inner:      inner,
+		root:       root,
+		exclude:    exclude,
+		extensions: extensions,
+		Events:     make(chan Event, 100),
+		Errors:     make(chan error, 10),
+		done:       make(chan struct{}),
 	}
 
 	if err := w.addDirs(root); err != nil {
@@ -65,7 +67,7 @@ func (w *Watcher) loop() {
 				return
 			}
 
-			if !isGoFile(event.Name) {
+			if !w.matchesExtension(event.Name) {
 				continue
 			}
 
@@ -120,6 +122,11 @@ func (w *Watcher) isExcluded(name string) bool {
 	return false
 }
 
-func isGoFile(path string) bool {
-	return strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "go.mod")
+func (w *Watcher) matchesExtension(path string) bool {
+	for _, ext := range w.extensions {
+		if strings.HasSuffix(path, ext) {
+			return true
+		}
+	}
+	return false
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/greatnessinabox/drift/internal/analyzer"
 	"github.com/greatnessinabox/drift/internal/config"
 	"github.com/greatnessinabox/drift/internal/health"
+	"github.com/greatnessinabox/drift/internal/history"
 	"github.com/greatnessinabox/drift/internal/watcher"
 )
 
@@ -60,6 +61,9 @@ type model struct {
 	diagnosisText string
 	diagnosing    bool
 
+	// Sparkline history
+	sparklineData *history.SparklineData
+
 	quitting bool
 }
 
@@ -77,6 +81,10 @@ type animateTickMsg struct{}
 
 type diagnosisCompleteMsg struct {
 	text string
+}
+
+type historyCompleteMsg struct {
+	data *history.SparklineData
 }
 
 func New(cfg *config.Config, ana *analyzer.Analyzer, scorer *health.Scorer, score health.Score, results *analyzer.Results, w *watcher.Watcher) *model {
@@ -110,6 +118,7 @@ func (m *model) Init() tea.Cmd {
 	return tea.Batch(
 		m.spinner.Tick,
 		m.listenForChanges(),
+		m.loadHistory(),
 		tea.WindowSize(),
 	)
 }
@@ -166,6 +175,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.animating = true
 			cmds = append(cmds, m.animateTick())
 		}
+
+	case historyCompleteMsg:
+		m.sparklineData = msg.data
 
 	case animateTickMsg:
 		diff := m.targetScore - m.displayScore
@@ -229,8 +241,12 @@ func (m *model) viewHeader() string {
 	subtitle := lipgloss.NewStyle().Foreground(colorDim).Render(" — codebase health monitor")
 	header := logo + subtitle
 
+	langLabel := string(m.results.Language)
+	if langLabel == "" || langLabel == "unknown" {
+		langLabel = "unknown"
+	}
 	fileInfo := lipgloss.NewStyle().Foreground(colorDim).Render(
-		fmt.Sprintf("%d files · %d functions", m.results.FileCount, m.results.FuncCount),
+		fmt.Sprintf("%s · %d files · %d functions", langLabel, m.results.FileCount, m.results.FuncCount),
 	)
 
 	padding := m.width - lipgloss.Width(header) - lipgloss.Width(fileInfo) - 4
@@ -245,18 +261,31 @@ func (m *model) viewScore() string {
 	score := m.displayScore
 	total := 100.0
 
-	filled := int(score / total * 30)
-	empty := 30 - filled
+	barWidth := 30
+	filled := int(score / total * float64(barWidth))
+	empty := barWidth - filled
 
 	bar := ""
 	for i := 0; i < filled; i++ {
-		if score >= 80 {
-			bar += lipgloss.NewStyle().Foreground(colorGreen).Render("█")
-		} else if score >= 50 {
-			bar += lipgloss.NewStyle().Foreground(colorYellow).Render("█")
+		// Calculate color based on position in bar (gradient effect)
+		position := float64(i) / float64(barWidth) * 100.0
+		
+		var style lipgloss.Style
+		if position >= 80 {
+			style = lipgloss.NewStyle().Foreground(colorGreen)
+		} else if position >= 60 {
+			// Transition zone from yellow-green
+			style = lipgloss.NewStyle().Foreground(lipgloss.Color("#9ACD32")) // yellow-green
+		} else if position >= 40 {
+			style = lipgloss.NewStyle().Foreground(colorYellow)
+		} else if position >= 20 {
+			// Transition zone from yellow to red
+			style = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8C00")) // dark orange
 		} else {
-			bar += lipgloss.NewStyle().Foreground(colorRed).Render("█")
+			style = lipgloss.NewStyle().Foreground(colorRed)
 		}
+		
+		bar += style.Render("█")
 	}
 	for i := 0; i < empty; i++ {
 		bar += lipgloss.NewStyle().Foreground(colorDim).Render("░")
@@ -279,9 +308,19 @@ func (m *model) viewScore() string {
 
 	line := fmt.Sprintf("  %s  %s%s%s%s", bar, scoreText, scoreLabel, delta, spinner)
 
+	// Add sparkline if available
+	var content string
+	if m.sparklineData != nil && len(m.sparklineData.HealthScore) > 0 {
+		spark := sparkline(m.sparklineData.HealthScore)
+		sparkLabel := lipgloss.NewStyle().Foreground(colorDim).Render(" trend: ")
+		content = line + "\n  " + sparkLabel + spark
+	} else {
+		content = line
+	}
+
 	width := m.width
 	style := panelStyle.Width(width - 4)
-	return style.Render(line)
+	return style.Render(content)
 }
 
 func (m *model) viewComplexity() string {
@@ -292,6 +331,12 @@ func (m *model) viewComplexity() string {
 
 	var lines []string
 	lines = append(lines, title)
+
+	// Add sparkline if available
+	if m.sparklineData != nil && len(m.sparklineData.AvgComplexity) > 0 {
+		spark := sparkline(m.sparklineData.AvgComplexity)
+		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  "+spark))
+	}
 
 	count := 8
 	if len(m.results.Complexity) < count {
@@ -395,6 +440,12 @@ func (m *model) viewBoundaries() string {
 	var lines []string
 	lines = append(lines, title)
 
+	// Add sparkline if available
+	if m.sparklineData != nil && len(m.sparklineData.ViolationCount) > 0 {
+		spark := sparkline(m.sparklineData.ViolationCount)
+		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  "+spark))
+	}
+
 	if len(m.cfg.Boundaries) == 0 && len(m.results.Violations) == 0 {
 		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  No boundary rules defined"))
 		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  Add rules in .drift.yaml"))
@@ -430,9 +481,20 @@ func (m *model) viewActivity() string {
 	var lines []string
 	lines = append(lines, title)
 
+	// Add dead code sparkline if available
+	if m.sparklineData != nil && len(m.sparklineData.DeadCodeCount) > 0 {
+		spark := sparkline(m.sparklineData.DeadCodeCount)
+		sparkLabel := lipgloss.NewStyle().Foreground(colorDim).Render("  dead code: ")
+		lines = append(lines, sparkLabel+spark)
+	}
+
 	if len(m.activity) == 0 {
 		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  Watching for changes..."))
-		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  Edit a .go file to see updates"))
+		langHint := string(m.results.Language)
+		if langHint == "" {
+			langHint = "a source"
+		}
+		lines = append(lines, lipgloss.NewStyle().Foreground(colorDim).Render("  Edit "+langHint+" file to see updates"))
 	}
 
 	count := 6
@@ -537,6 +599,24 @@ func (m *model) animateTick() tea.Cmd {
 	return tea.Tick(16*time.Millisecond, func(t time.Time) tea.Msg {
 		return animateTickMsg{}
 	})
+}
+
+func (m *model) loadHistory() tea.Cmd {
+	return func() tea.Msg {
+		histAna, err := history.New(m.cfg)
+		if err != nil {
+			// Not a git repo or error loading, skip history
+			return historyCompleteMsg{data: &history.SparklineData{}}
+		}
+
+		data, err := histAna.Walk(10)
+		if err != nil {
+			// Error walking commits, skip history
+			return historyCompleteMsg{data: &history.SparklineData{}}
+		}
+
+		return historyCompleteMsg{data: data}
+	}
 }
 
 func buildDiagnosisText(score health.Score, results *analyzer.Results, cfg *config.Config) string {
@@ -658,6 +738,7 @@ func PrintReport(cfg *config.Config, score health.Score, results *analyzer.Resul
 
 func PrintSnapshot(score health.Score, results *analyzer.Results) error {
 	snapshot := map[string]interface{}{
+		"language": string(results.Language),
 		"score": map[string]interface{}{
 			"total":      score.Total,
 			"complexity": score.Complexity,

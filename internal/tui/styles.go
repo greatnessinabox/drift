@@ -130,3 +130,52 @@ func complexityBar(complexity, maxDisplay int) string {
 	}
 	return bar
 }
+
+func sparkline(data []float64) string {
+	if len(data) == 0 {
+		return ""
+	}
+
+	chars := []string{"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"}
+
+	min, max := data[0], data[0]
+	for _, v := range data {
+		if v < min {
+			min = v
+		}
+		if v > max {
+			max = v
+		}
+	}
+
+	result := ""
+	for i, v := range data {
+		var normalized int
+		if max == min {
+			normalized = 4 // middle char if all values are equal
+		} else {
+			normalized = int((v - min) / (max - min) * 7)
+			if normalized > 7 {
+				normalized = 7
+			}
+		}
+
+		// Color based on trend (current vs previous)
+		var style lipgloss.Style
+		if i > 0 {
+			if v > data[i-1] {
+				style = lipgloss.NewStyle().Foreground(colorGreen)
+			} else if v < data[i-1] {
+				style = lipgloss.NewStyle().Foreground(colorRed)
+			} else {
+				style = lipgloss.NewStyle().Foreground(colorYellow)
+			}
+		} else {
+			style = lipgloss.NewStyle().Foreground(colorDim)
+		}
+
+		result += style.Render(chars[normalized])
+	}
+
+	return result
+}

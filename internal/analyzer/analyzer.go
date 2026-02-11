@@ -1,13 +1,6 @@
 package analyzer
 
 import (
-	"fmt"
-	"go/ast"
-	"go/parser"
-	"go/token"
-	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/greatnessinabox/drift/internal/config"
@@ -20,50 +13,50 @@ type Results struct {
 	DeadCode     []DeadFunction
 	FileCount    int
 	FuncCount    int
+	Language     Language
 }
 
 type Analyzer struct {
-	cfg *config.Config
-	mu  sync.Mutex
+	cfg  *config.Config
+	lang LanguageAnalyzer
+	mu   sync.Mutex
 }
 
 func New(cfg *config.Config) *Analyzer {
-	return &Analyzer{cfg: cfg}
+	lang := detectOrConfiguredLanguage(cfg)
+	return &Analyzer{cfg: cfg, lang: lang}
+}
+
+func (a *Analyzer) Extensions() []string {
+	return a.lang.Extensions()
+}
+
+func (a *Analyzer) DetectedLanguage() Language {
+	return a.lang.Language()
 }
 
 func (a *Analyzer) Run() (*Results, error) {
-	results := &Results{}
+	results := &Results{
+		Language: a.lang.Language(),
+	}
 
-	goFiles, err := a.findGoFiles()
+	files, err := a.lang.FindFiles(a.cfg.Root, a.cfg.Exclude)
 	if err != nil {
-		return nil, fmt.Errorf("finding Go files: %w", err)
+		return nil, err
 	}
-	results.FileCount = len(goFiles)
+	results.FileCount = len(files)
 
-	fset := token.NewFileSet()
-	var allFiles []*ast.File
+	complexity, funcCount := a.lang.AnalyzeComplexity(files)
+	results.Complexity = complexity
+	results.FuncCount = funcCount
 
-	for _, path := range goFiles {
-		f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
-		if err != nil {
-			continue
-		}
-		allFiles = append(allFiles, f)
-
-		funcs := analyzeComplexity(fset, f, path)
-		results.Complexity = append(results.Complexity, funcs...)
-		results.FuncCount += len(funcs)
-	}
-
-	deps, err := analyzeDeps(a.cfg.Root)
+	deps, err := a.lang.AnalyzeDeps(a.cfg.Root)
 	if err == nil {
 		results.Dependencies = deps
 	}
 
-	violations := analyzeImports(fset, allFiles, a.cfg.Boundaries, a.cfg.Root)
-	results.Violations = violations
-
-	results.DeadCode = analyzeDeadCode(fset, allFiles)
+	results.Violations = a.lang.AnalyzeImports(files, a.cfg.Boundaries, a.cfg.Root)
+	results.DeadCode = a.lang.AnalyzeDeadCode(files)
 
 	sortComplexityDesc(results.Complexity)
 
@@ -74,56 +67,36 @@ func (a *Analyzer) RunSingle(path string) (*Results, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	if !strings.HasSuffix(path, ".go") {
-		return &Results{}, nil
+	results := &Results{
+		Language: a.lang.Language(),
 	}
 
-	if strings.HasSuffix(path, "_test.go") {
-		return &Results{}, nil
+	matched := false
+	for _, ext := range a.lang.Extensions() {
+		if len(path) > len(ext) && path[len(path)-len(ext):] == ext {
+			matched = true
+			break
+		}
 	}
-
-	results := &Results{}
-
-	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
-	if err != nil {
+	if !matched {
 		return results, nil
 	}
 
-	funcs := analyzeComplexity(fset, f, path)
-	results.Complexity = funcs
-	results.FuncCount = len(funcs)
+	files := []string{path}
+	complexity, funcCount := a.lang.AnalyzeComplexity(files)
+	results.Complexity = complexity
+	results.FuncCount = funcCount
 	results.FileCount = 1
 
 	return results, nil
 }
 
-func (a *Analyzer) findGoFiles() ([]string, error) {
-	var files []string
-
-	err := filepath.Walk(a.cfg.Root, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return nil
-		}
-
-		if info.IsDir() {
-			name := info.Name()
-			for _, ex := range a.cfg.Exclude {
-				if name == ex {
-					return filepath.SkipDir
-				}
-			}
-			return nil
-		}
-
-		if strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "_test.go") {
-			files = append(files, path)
-		}
-
-		return nil
-	})
-
-	return files, err
+func detectOrConfiguredLanguage(cfg *config.Config) LanguageAnalyzer {
+	if cfg.Language != "" {
+		return NewLanguageAnalyzer(Language(cfg.Language))
+	}
+	detected := DetectLanguage(cfg.Root)
+	return NewLanguageAnalyzer(detected)
 }
 
 func sortComplexityDesc(funcs []FunctionComplexity) {

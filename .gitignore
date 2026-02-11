@@ -26,5 +26,13 @@ Thumbs.db
 # Config (user-specific)
 .drift.yaml
 
+# Coverage
+coverage.out
+
+# VHS recordings
+*.gif
+*.mp4
+*.webm
+
 # Build
 dist/
