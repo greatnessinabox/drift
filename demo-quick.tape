@@ -11,34 +11,47 @@ Set Theme "GitHub Dark"
 Set TypingSpeed 100ms
 Set PlaybackSpeed 1.2
 
-# Quick intro
-Type "# drift 🎯"
-Sleep 800ms
+# Build drift first (hidden)
+Hide
+Type "go build ./cmd/drift/"
 Enter
-Type "# Real-time Go codebase health monitoring"
-Sleep 1.5s
+Sleep 3s
+Show
+
+# Quick intro
+Type "# drift - Multi-language codebase health"
+Sleep 1s
 Enter
 Enter
 
-# Show report
-Type "drift report"
-Sleep 200ms
+# Show report on a Go project
+Type "./drift report"
+Sleep 500ms
+Enter
+Sleep 4s
+
+# Clear
+Ctrl+L
+Sleep 300ms
+
+# Show check for CI
+Type "./drift check --fail-under 70"
+Sleep 500ms
 Enter
 Sleep 3s
 
 # Clear
 Ctrl+L
+Sleep 300ms
 
-# Show check for CI
-Type "drift check --fail-under 70"
-Sleep 200ms
+# Show JSON snapshot
+Type "./drift snapshot | head -10"
+Sleep 500ms
 Enter
-Sleep 2s
+Sleep 3s
 
 # Clear and final message
 Ctrl+L
-Type "# Install: go install github.com/greatnessinabox/drift@latest"
-Sleep 2s
-Enter
-Type "# Run: drift"
-Sleep 1.5s
+Sleep 300ms
+Type "# go install github.com/greatnessinabox/drift@latest"
+Sleep 3s

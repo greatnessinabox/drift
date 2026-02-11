@@ -31,8 +31,15 @@ coverage.out
 
 # VHS recordings
 *.gif
+!demo-quick.gif
+!demo-dashboard.gif
+!demo-tui.gif
 *.mp4
 *.webm
 
 # Build
 dist/
+
+# Site
+node_modules/
+.astro/

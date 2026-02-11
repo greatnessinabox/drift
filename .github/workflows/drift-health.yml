@@ -1,0 +1,120 @@
+name: Drift Health Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    name: Check Codebase Health
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # For commit history analysis
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install drift
+        run: |
+          go install github.com/greatnessinabox/drift@latest
+          drift --version
+
+      - name: Run drift analysis
+        id: drift
+        run: |
+          # Run drift check
+          drift check --fail-under 70 > drift-output.txt 2>&1 || true
+          
+          # Save the report
+          drift report > drift-report.txt 2>&1
+          
+          # Get the score
+          SCORE=$(drift snapshot 2>/dev/null | jq -r '.score.total // "N/A"')
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+          
+          # Check if score meets threshold
+          if (( $(echo "$SCORE < 70" | bc -l) )); then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "status=passed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Copilot-powered summary (on PR)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Create a summary with Copilot (if available)
+          if command -v gh &> /dev/null && gh copilot --version &> /dev/null; then
+            echo "🤖 Using GitHub Copilot to generate summary..."
+            
+            REPORT=$(cat drift-report.txt | head -50)
+            
+            gh copilot suggest "Create a friendly PR comment summarizing this code health report. Include the score, top issues, and encouraging tone: $REPORT" > copilot-summary.txt 2>&1 || echo "Code Health Report\n\n$(cat drift-report.txt)" > copilot-summary.txt
+          else
+            echo "Code Health Report\n\n$(cat drift-report.txt)" > copilot-summary.txt
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const score = '${{ steps.drift.outputs.score }}';
+            const status = '${{ steps.drift.outputs.status }}';
+            
+            let summary = '## 📊 Drift Health Check\n\n';
+            
+            if (status === 'passed') {
+              summary += `✅ **Health Score: ${score}/100** - Meets threshold!\n\n`;
+            } else {
+              summary += `❌ **Health Score: ${score}/100** - Below threshold (70)\n\n`;
+            }
+            
+            // Try to read Copilot summary
+            try {
+              const copilotSummary = fs.readFileSync('copilot-summary.txt', 'utf8');
+              summary += copilotSummary;
+            } catch {
+              const report = fs.readFileSync('drift-report.txt', 'utf8');
+              summary += '```\n' + report + '\n```';
+            }
+            
+            summary += '\n\n---\n*Powered by [drift](https://github.com/greatnessinabox/drift) + GitHub Copilot CLI*';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-health-report
+          path: |
+            drift-report.txt
+            drift-output.txt
+
+      - name: Fail if health score too low
+        if: steps.drift.outputs.status == 'failed'
+        run: |
+          echo "❌ Health score ${{ steps.drift.outputs.score }} is below the threshold of 70"
+          exit 1

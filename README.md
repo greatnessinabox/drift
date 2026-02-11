@@ -1,42 +1,67 @@
 # drift
 
-**Real-time codebase health dashboard with AI diagnostics.**
+[![CI](https://github.com/greatnessinabox/drift/actions/workflows/ci.yml/badge.svg)](https://github.com/greatnessinabox/drift/actions/workflows/ci.yml)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/greatnessinabox/drift)](https://github.com/greatnessinabox/drift)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/greatnessinabox/drift)](https://github.com/greatnessinabox/drift/releases)
 
-drift watches your Go codebase in real-time, detects code health degradation, and uses AI to diagnose problems and suggest fixes. Think Datadog for your codebase, in your terminal.
+**Real-time multi-language codebase health dashboard with GitHub Copilot CLI integration.**
+
+drift watches your codebase in real-time, detects code health degradation, and uses AI to diagnose problems and suggest fixes. Think Datadog for your codebase, in your terminal.
+
+> 🏆 **Built for the [GitHub Copilot CLI Challenge](https://dev.to/challenges/github-2026-01-21)**  
+> drift showcases deep GitHub Copilot CLI integration with interactive fixing, custom agents, and AI-powered PR comments.
+
+Supports **Go**, **TypeScript/JavaScript**, **Python**, **Rust**, and **Java** with automatic language detection.
+
+![drift demo](demo-quick.gif)
 
 ```
-┌─────────────────────── DRIFT ────────────────────────┐
-│                                                       │
-│            ████████████░░░░░░  87/100                 │
-│            ▲ +3 from last commit                      │
-│                                                       │
-├────────────────────────┬──────────────────────────────┤
-│  COMPLEXITY            │  DEPENDENCIES                │
-│  ──────────            │  ────────────                 │
-│  ⚠ parse.go:47   32   │  ✓ bubbletea    v1.3  current│
-│  ⚠ analyze.go:12 28   │  ⚠ cobra        v1.8  34d   │
-│    main.go:8     12   │  ✗ go-git       v5.8  180d  │
-├────────────────────────┼──────────────────────────────┤
-│  BOUNDARIES            │  ACTIVITY                    │
-│  ──────────            │  ────────                    │
-│  ✗ api → db (3 hits)   │  14:32:05  parse.go modified │
-│  ✓ cmd → pkg           │  14:31:52  go.mod updated    │
-├────────────────────────┴──────────────────────────────┤
-│ [tab] navigate  [d] diagnose  [r] refresh  [q] quit  │
-└───────────────────────────────────────────────────────┘
+◆ DRIFT — codebase health monitor        typescript · 84 files · 312 functions
+┌──────────────────────────────────────────────────────────────┐
+│  ████████████████████░░░░░░░░  72/100  ▲ +3  ▁▃▅▆▇█▇▆▅▇    │
+╰──────────────────────────────────────────────────────────────╯
+┌─ COMPLEXITY ─────────────────┐┌─ DEPENDENCIES ───────────────┐
+│  ✗ parser.ts:47        32   ││  ✓ express       4.21 current │
+│  ⚠ transform.tsx:12    28   ││  ⚠ lodash        4.17  34d   │
+│    main.ts:8           12   ││  ✗ axios         1.6   180d  │
+╰──────────────────────────────╯╰──────────────────────────────╯
+┌─ BOUNDARIES ─────────────────┐┌─ ACTIVITY ───────────────────┐
+│  ✗ api → db (3 hits)        ││  14:32  parser.ts modified    │
+│  ✓ cmd → pkg                ││  14:31  package.json updated  │
+╰──────────────────────────────╯╰──────────────────────────────╯
+ [tab] navigate  [d] diagnose  [r] refresh  [q] quit
 ```
 
 ## Features
 
-- **Live Dashboard** — Full-screen TUI that updates in real-time as you edit code
-- **Sparkline Trends** — Visualize health metrics over the last 10 commits with inline charts
-- **Cyclomatic Complexity** — Identifies your most complex functions using Go AST analysis
-- **Dependency Freshness** — Checks every dependency against the Go module proxy
-- **Architecture Boundaries** — Define import rules and catch violations instantly
-- **Dead Code Detection** — Finds exported functions with zero callers
-- **AI Diagnostics** — Press `d` to get AI-powered analysis via Claude or GPT-4o
-- **Health Score** — Weighted 0-100 score with animated transitions
-- **CI-Friendly** — `drift snapshot` outputs JSON for pipeline integration
+- **🤖 AI Agent Support** — Works with GitHub Copilot, Claude Code, Cursor, Aider, and more (see [AI_AGENTS.md](.github/AI_AGENTS.md))
+- **🌐 Multi-Language** — Auto-detects Go, TypeScript/JS, Python, Rust, and Java from project manifest files
+- **🎨 Live Dashboard** — Full-screen TUI that updates in real-time as you edit code
+- **📈 Sparkline Trends** — Visualize health metrics over the last 10 commits with inline charts
+- **🔧 Cyclomatic Complexity** — Go uses full AST analysis; other languages use heuristic pattern matching
+- **📦 Dependency Freshness** — Checks dependencies against their registry (Go proxy, npm, PyPI, crates.io, Maven Central)
+- **🏗️ Architecture Boundaries** — Define import rules and catch violations instantly
+- **☠️ Dead Code Detection** — Finds exported functions with zero callers
+- **💬 AI Diagnostics** — Press `d` to get AI-powered analysis via Claude or GPT-4o
+- **📊 Health Score** — Weighted 0-100 score with animated transitions
+- **✅ CI-Friendly** — `drift check` + GitHub Action for automated PR comments
+
+## Supported Languages
+
+| Language | Manifest | Analysis | Dependency Registry |
+|----------|----------|----------|---------------------|
+| Go | `go.mod` | Full AST (`go/ast`) | Go module proxy |
+| TypeScript/JS | `package.json` | Heuristic regex | npm registry |
+| Python | `pyproject.toml` / `requirements.txt` | Heuristic + indentation | PyPI |
+| Rust | `Cargo.toml` | Heuristic regex | crates.io |
+| Java | `pom.xml` / `build.gradle` | Heuristic regex | Maven Central |
+
+drift auto-detects the language by checking for manifest files. You can also set it explicitly in `.drift.yaml`:
+
+```yaml
+language: typescript  # or "go", "python", "rust", "java"
+```
 
 ## Install
 
@@ -55,32 +80,103 @@ go build ./cmd/drift/
 ## Quick Start
 
 ```bash
-# Run the live dashboard in any Go project
-cd your-go-project
+# Run the live dashboard in any supported project
+cd your-project
 drift
 
-# Generate a terminal-formatted report
+# Generate a report
 drift report
 
-# Output JSON for CI pipelines
-drift snapshot
-
-# Check health score and fail if below threshold (for CI)
+# Check health (for CI)
 drift check --fail-under 70
 
-# Create a config file
-drift init
+# 🆕 Interactive fix with GitHub Copilot CLI
+drift fix
+
+# Use custom agent commands
+gh copilot --agent drift-dev "@drift analyze src/"
 ```
+
+## 🤖 GitHub Copilot CLI Integration
+
+drift showcases three powerful GitHub Copilot CLI integration patterns for the [GitHub Copilot CLI Challenge](https://dev.to/challenges/github-2026-01-21).
+
+> **💡 Beyond Copilot:** drift works with **any AI coding assistant** (Claude Code, Cursor, Aider, etc.). See [.github/AI_AGENTS.md](.github/AI_AGENTS.md) for complete multi-agent guide.
+
+### Interactive Fixing
+
+Use `drift fix` to get AI-powered refactoring suggestions:
+
+```bash
+$ drift fix
+
+🔍 Analyzing codebase... (Score: 78/100)
+
+Found 3 issue(s) to fix:
+
+1. [🔴 HIGH] model.Update() in app.go:126 (complexity: 25)
+
+🤖 Asking GitHub Copilot for suggestions...
+[Copilot provides detailed refactoring with code examples]
+
+Apply this suggestion? [y/N/s(kip rest)] y
+```
+
+**Requirements:**
+```bash
+gh extension install github/gh-copilot
+```
+
+### Custom Agent
+
+Use `@drift` commands in Copilot CLI:
+
+```bash
+gh copilot --agent drift-dev "@drift analyze internal/analyzer/"
+gh copilot --agent drift-dev "@drift suggest-refactor complexFunction()"
+gh copilot --agent drift-dev "@drift explain complexity"
+```
+
+See [`.github/agents/drift-dev.agent.md`](.github/agents/drift-dev.agent.md) for all commands.
+
+### GitHub Action
+
+Add drift to your CI pipeline with AI-powered PR comments:
+
+```yaml
+# .github/workflows/drift.yml
+name: Code Health
+on: [pull_request]
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go install github.com/greatnessinabox/drift@latest
+      - run: drift check --fail-under 70
+```
+
+See [`.github/workflows/drift-health.yml`](.github/workflows/drift-health.yml) for a complete example with Copilot-generated PR summaries.
 
 ## Configuration
 
 Create a `.drift.yaml` in your project root:
 
 ```yaml
+# Language (empty = auto-detect from manifest files)
+language: ""
+
 # Directories to exclude
 exclude:
   - vendor
+  - node_modules
   - .git
+  - __pycache__
+  - target
 
 # Metric weights (must sum to 1.0)
 weights:
@@ -109,14 +205,21 @@ thresholds:
 
 ## AI Diagnostics
 
-Press `d` in the dashboard to trigger an AI diagnosis. Supports:
+Press `d` in the dashboard to trigger an AI diagnosis. Works with:
 
-- **Anthropic Claude** — Set `ANTHROPIC_API_KEY` env var
-- **OpenAI GPT-4o** — Set `OPENAI_API_KEY` env var
+- **Anthropic Claude** (Sonnet 3.5, 3.7, Opus, Haiku) — Set `ANTHROPIC_API_KEY` env var
+- **OpenAI GPT-4o / o1** — Set `OPENAI_API_KEY` env var
 
-Configure your provider in `.drift.yaml` under `ai.provider`.
+Configure in `.drift.yaml`:
+```yaml
+ai:
+  provider: anthropic  # or "openai"
+  model: ""            # uses sensible defaults
+```
 
-The AI analyzes your worst-scoring metrics and provides specific, actionable recommendations with file and function names.
+The AI analyzes your worst-scoring metrics and provides specific, actionable recommendations with code snippets.
+
+**Beyond built-in diagnostics:** drift works with any AI coding assistant. See [.github/AI_AGENTS.md](.github/AI_AGENTS.md) for workflows with Claude Code, Cursor, Aider, and more.
 
 ## Keyboard Shortcuts
 
@@ -131,35 +234,17 @@ The AI analyzes your worst-scoring metrics and provides specific, actionable rec
 
 ## How It Works
 
-1. **Analysis Engine** — Parses all `.go` files using `go/ast` to calculate cyclomatic complexity, detect dead code, and map import graphs
-2. **Dependency Checker** — Reads `go.mod` and queries the Go module proxy for latest versions
-3. **File Watcher** — Uses `fsnotify` with 200ms debounce for instant feedback on file changes
-4. **History Analyzer** — Uses `go-git` to walk commit history and generate sparkline trends
-5. **Health Score** — Weighted average of all metrics, with configurable thresholds
-6. **TUI** — Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Lip Gloss](https://github.com/charmbracelet/lipgloss) for a beautiful terminal experience
+1. **Language Detection** — Checks for manifest files (`go.mod`, `package.json`, `Cargo.toml`, etc.) to determine the project language
+2. **Analysis Engine** — Go projects get full AST analysis; other languages use heuristic regex-based pattern matching for complexity, imports, and dead code
+3. **Dependency Checker** — Reads the language-specific manifest and queries the appropriate registry for latest versions
+4. **File Watcher** — Uses `fsnotify` with 200ms debounce, watching only files matching the detected language's extensions
+5. **History Analyzer** — Uses `go-git` to walk commit history and generate sparkline trends
+6. **Health Score** — Weighted average of all metrics, with configurable thresholds
+7. **TUI** — Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Lip Gloss](https://github.com/charmbracelet/lipgloss) for a beautiful terminal experience
 
-## Copilot CLI Integration
+## Additional CI Options
 
-drift ships with a custom GitHub Copilot agent profile and an agent skill:
-
-- **`.github/agents/drift-dev.agent.md`** — Turns Copilot CLI into a drift development expert
-- **`.github/skills/go-health-analysis/`** — Reusable skill for Go code health analysis
-
-These work with GitHub Copilot CLI, VS Code Copilot, and the Copilot coding agent.
-
-## CI Integration
-
-Use the `drift check` command with `--fail-under` flag for easy CI integration:
-
-```yaml
-# GitHub Actions example
-- name: Check codebase health
-  run: |
-    go install github.com/greatnessinabox/drift@latest
-    drift check --fail-under 70
-```
-
-Or use the `snapshot` command for more advanced workflows:
+Use the `snapshot` command for advanced workflows:
 
 ```yaml
 # Advanced CI integration with JSON output
@@ -167,6 +252,8 @@ Or use the `snapshot` command for more advanced workflows:
   run: |
     go install github.com/greatnessinabox/drift@latest
     SCORE=$(drift snapshot | jq '.score.total')
+    LANG=$(drift snapshot | jq -r '.language')
+    echo "Language: $LANG, Score: $SCORE"
     if (( $(echo "$SCORE < 70" | bc -l) )); then
       echo "Health score $SCORE is below threshold"
       exit 1

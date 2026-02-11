@@ -4,12 +4,21 @@
 # Project root (defaults to current directory)
 root: "."
 
+# Language (empty = auto-detect from manifest files)
+# Supported: "go", "typescript", "python", "rust", "java"
+language: ""
+
 # Directories to exclude from analysis
 exclude:
   - vendor
   - node_modules
   - .git
   - testdata
+  - __pycache__
+  - .venv
+  - target
+  - dist
+  - build
 
 # Metric weights (must sum to 1.0)
 weights:

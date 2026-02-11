@@ -2,6 +2,23 @@
 
 This repository includes VHS tape files for creating automated terminal demos of drift.
 
+## Prerequisites
+
+1. Install VHS (https://github.com/charmbracelet/vhs):
+
+```bash
+# macOS
+brew install vhs
+```
+
+2. Build drift:
+
+```bash
+go build ./cmd/drift/
+```
+
+All tape files include a hidden build step, but having drift pre-built speeds up recording.
+
 ## Available Demos
 
 ### 1. `demo-quick.tape` (30 seconds)
@@ -10,6 +27,7 @@ This repository includes VHS tape files for creating automated terminal demos of
 Shows:
 - Quick report output
 - CI check command
+- JSON snapshot
 - Installation instructions
 
 ```bash
@@ -50,8 +68,8 @@ vhs demo-tui.tape
 
 Shows:
 - Help menu
-- All CLI commands
-- TUI dashboard
+- All CLI commands (report, check pass/fail, snapshot)
+- TUI dashboard with navigation
 - Complete workflow
 
 ```bash
@@ -59,37 +77,13 @@ vhs demo.tape
 # Generates: demo.gif
 ```
 
-## Prerequisites
-
-Install VHS (https://github.com/charmbracelet/vhs):
-
-```bash
-# macOS
-brew install vhs
-
-# Arch Linux
-pacman -S vhs
-
-# Nix
-nix-env -iA nixpkgs.vhs
-
-# From source
-go install github.com/charmbracelet/vhs@latest
-```
-
 ## Recording
 
-1. Ensure drift binary is built and in the current directory:
-   ```bash
-   go build ./cmd/drift/
-   ```
+```bash
+vhs demo-quick.tape
+```
 
-2. Run VHS with your chosen tape file:
-   ```bash
-   vhs demo-quick.tape
-   ```
-
-3. The GIF will be generated in the current directory.
+The GIF will be generated in the current directory. Each tape file includes a hidden `go build` step so the binary is always fresh.
 
 ## Customization
 
@@ -103,49 +97,6 @@ Edit any `.tape` file to customize:
 
 ## Tips
 
-- **Test first**: Run VHS with a short tape to verify setup
-- **Clean state**: Clear terminal history before recording
-- **Consistent state**: Use `Hide` blocks to set up environment
-- **Optimize size**: Keep GIFs under 5MB for GitHub
+- **Optimize size**: Keep GIFs under 5MB for GitHub README embeds
 - **Loop**: VHS GIFs loop by default - design accordingly
-
-## Hosting Demos
-
-### In README
-```markdown
-![drift demo](demo-quick.gif)
-```
-
-### On GitHub
-```markdown
-![drift demo](https://github.com/greatnessinabox/drift/raw/main/demo-quick.gif)
-```
-
-### On your website
-Host the GIF and embed:
-```html
-<img src="drift-demo.gif" alt="drift demo" />
-```
-
-## Troubleshooting
-
-### VHS not found
-- Ensure VHS is installed: `which vhs`
-- Add to PATH if needed
-
-### Drift command not found
-- Build drift: `go build ./cmd/drift/`
-- Add `./` prefix in tape file if needed
-
-### GIF too large
-- Reduce dimensions: Lower `Width` and `Height`
-- Reduce duration: Cut unnecessary `Sleep` commands
-- Compress: Use tools like `gifsicle`
-
-### Wrong directory
-- Use `Hide` block to navigate: `Type "cd /path/to/drift"`
-- Update paths in tape files to match your setup
-
-## Examples
-
-See `VHS_README.md` for additional usage examples and integration tips.
+- **Compress**: Use `gifsicle` to reduce file size if needed

@@ -1,4 +1,5 @@
-# VHS tape for drift demo
+# VHS tape for drift demo - Comprehensive (60 seconds)
+# Shows all commands and multi-language support
 # Install VHS: https://github.com/charmbracelet/vhs
 # Run with: vhs demo.tape
 
@@ -11,103 +12,119 @@ Set Theme "Catppuccin Mocha"
 Set TypingSpeed 50ms
 Set PlaybackSpeed 0.8
 
+# Build drift (hidden)
+Hide
+Type "go build ./cmd/drift/"
+Enter
+Sleep 3s
+Show
+
 # Title screen
 Type "# drift - Real-time codebase health dashboard"
 Sleep 1s
 Enter
 Sleep 500ms
-Type "# Monitors Go code quality with AI diagnostics"
+Type "# Supports Go, TypeScript, Python, Rust, and Java"
 Sleep 2s
 Enter
 Enter
 
 # Show help
-Type "drift --help"
-Sleep 500ms
-Enter
-Sleep 3s
-
-# Clear screen
-Ctrl+L
-
-# Show report command
-Type "# Generate a health report"
-Sleep 500ms
-Enter
-Type "drift report"
-Sleep 500ms
+Type "./drift --help"
+Sleep 800ms
 Enter
 Sleep 4s
 
 # Clear screen
 Ctrl+L
+Sleep 500ms
+
+# Show report command
+Type "# Generate a health report"
+Sleep 800ms
+Enter
+Type "./drift report"
+Sleep 800ms
+Enter
+Sleep 5s
+
+# Clear screen
+Ctrl+L
+Sleep 500ms
 
 # Show check command for CI
-Type "# Check health score for CI pipelines"
-Sleep 500ms
+Type "# CI health gate - passes"
+Sleep 800ms
 Enter
-Type "drift check --fail-under 70"
-Sleep 500ms
+Type "./drift check --fail-under 70"
+Sleep 800ms
 Enter
-Sleep 2s
+Sleep 3s
 
 # Clear screen
 Ctrl+L
+Sleep 500ms
 
 # Show check with failing threshold
-Type "# Fail if score is too low"
-Sleep 500ms
+Type "# CI health gate - fails"
+Sleep 800ms
 Enter
-Type "drift check --fail-under 95"
-Sleep 500ms
+Type "./drift check --fail-under 95"
+Sleep 800ms
 Enter
-Sleep 2s
+Sleep 3s
 
 # Clear screen
 Ctrl+L
+Sleep 500ms
+
+# Show JSON snapshot
+Type "# JSON snapshot for pipelines"
+Sleep 800ms
+Enter
+Type "./drift snapshot"
+Sleep 800ms
+Enter
+Sleep 4s
+
+# Clear screen
+Ctrl+L
+Sleep 500ms
 
 # Show the live dashboard
 Type "# Launch the live TUI dashboard"
-Sleep 500ms
+Sleep 800ms
 Enter
-Type "drift"
-Sleep 500ms
+Type "./drift"
+Sleep 800ms
 Enter
-Sleep 3s
+
+# Let the dashboard load and sparklines render
+Sleep 5s
 
 # Let the dashboard display
 Sleep 2s
 
-# Show navigation hint
-Sleep 1s
-
 # Tab through panels
-Sleep 1s
-Type@500ms "Tab"
-Sleep 1s
-Type@500ms "Tab"
-Sleep 1s
-Type@500ms "Tab"
-Sleep 1s
-
-# Wait before showing refresh
-Sleep 1s
+Tab
+Sleep 2s
+Tab
+Sleep 2s
+Tab
+Sleep 2s
+Tab
+Sleep 2s
 
 # Show refresh
 Type "r"
-Sleep 2s
-
-# Show diagnosis hint
-Sleep 1s
+Sleep 3s
 
 # Exit the dashboard
 Type "q"
-Sleep 500ms
+Sleep 1s
 
 # Clear and show final message
 Ctrl+L
-Type "# Try drift in your Go projects!"
 Sleep 500ms
-Enter
 Type "# go install github.com/greatnessinabox/drift@latest"
 Sleep 3s

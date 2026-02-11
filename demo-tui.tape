@@ -1,5 +1,5 @@
-# VHS tape for drift demo - Interactive version
-# This version focuses on the live TUI experience
+# VHS tape for drift demo - Full feature showcase (50 seconds)
+# Shows multi-language support with both Go and TypeScript analysis
 # Run with: vhs demo-tui.tape
 
 Output demo-tui.gif
@@ -11,91 +11,84 @@ Set Theme "Dracula"
 Set TypingSpeed 80ms
 Set PlaybackSpeed 1.0
 
+# Build drift (hidden)
 Hide
-
-# Navigate to drift directory and ensure we're in the right place
-Type "cd /Users/marquis.nobles/marquis.codes/drift"
+Type "go build ./cmd/drift/"
 Enter
-Sleep 500ms
-
+Sleep 3s
 Show
 
 # Title
-Type "# drift - Real-time Go codebase health monitoring"
+Type "# drift - Polyglot codebase health monitoring"
 Sleep 1.5s
 Enter
-Sleep 300ms
-
-# Quick feature list
-Type "# ✨ Features: Live TUI • AI Diagnostics • Sparkline Trends • CI Integration"
-Sleep 2s
+Type "# Go, TypeScript, Python, Rust, Java"
+Sleep 1.5s
 Enter
 Enter
 
-# Show quick report first
-Type "drift report"
-Sleep 300ms
+# Show report on Go project (drift itself)
+Type "./drift report"
+Sleep 500ms
 Enter
-Sleep 3.5s
+Sleep 4s
 
 # Clear
 Ctrl+L
+Sleep 500ms
 
 # Show CI check
 Type "# CI Integration - check health score"
+Sleep 800ms
+Enter
+Type "./drift check --fail-under 90"
 Sleep 500ms
 Enter
-Type "drift check --fail-under 90"
-Sleep 300ms
-Enter
-Sleep 2.5s
+Sleep 3s
 
 # Clear for TUI
 Ctrl+L
+Sleep 500ms
 
 # Launch TUI
 Type "# Live TUI Dashboard with real-time monitoring"
-Sleep 500ms
+Sleep 800ms
 Enter
-Type "drift"
-Sleep 500ms
+Type "./drift"
+Sleep 800ms
 Enter
 
 # Let TUI load and show sparklines
-Sleep 3s
+Sleep 4s
 
 # Navigate through panels to show focus
-Sleep 1s
-Tab
 Sleep 1.5s
 Tab
-Sleep 1.5s
+Sleep 2s
 Tab
-Sleep 1.5s
+Sleep 2s
 Tab
-Sleep 1.5s
+Sleep 2s
+Tab
+Sleep 2s
 
 # Back to first panel
 Shift+Tab
-Sleep 1s
+Sleep 1.5s
 
 # Refresh
 Type "r"
-Sleep 2s
+Sleep 3s
 
 # Show footer hints
 Sleep 2s
 
 # Exit
 Type "q"
-Sleep 500ms
+Sleep 1s
 
 # Final screen
 Ctrl+L
-Type "# Get started:"
-Enter
-Type "go install github.com/greatnessinabox/drift@latest"
-Sleep 2s
-Enter
-Type "cd your-go-project && drift"
-Sleep 2s
+Sleep 500ms
+Type "# go install github.com/greatnessinabox/drift@latest"
+Sleep 3s

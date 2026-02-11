@@ -1,0 +1,684 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout
+  title="drift — Real-time codebase health dashboard"
+  description="Monitor code complexity, dependency freshness, architecture boundaries, and dead code in real-time. Supports Go, TypeScript, Python, Rust, and Java."
+>
+  <!-- Scan line on load -->
+  <div class="scan-line" aria-hidden="true"></div>
+
+  <!-- Ambient orbs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
+    <div class="orb w-[500px] h-[500px] bg-green/[0.07] -top-[15%] -left-[10%]"></div>
+    <div class="orb w-[400px] h-[400px] bg-cyan/[0.05] top-[35%] -right-[12%]" style="animation-delay: -8s;"></div>
+    <div class="orb w-[350px] h-[350px] bg-purple/[0.05] bottom-[5%] left-[15%]" style="animation-delay: -16s;"></div>
+  </div>
+
+  <!-- ═══════════ NAV ═══════════ -->
+  <nav class="fixed top-5 left-5 right-5 z-50 border border-border/40 bg-bg/60 backdrop-blur-2xl rounded-2xl">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="/" class="font-mono font-bold text-base text-green flex items-center gap-2.5 cursor-pointer group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-green transition-transform duration-300 group-hover:scale-110">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        drift
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/greatnessinabox/drift" class="text-text-muted hover:text-text transition-colors cursor-pointer p-2 rounded-lg hover:bg-surface" aria-label="View drift on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a
+          href="https://github.com/greatnessinabox/drift/releases"
+          class="bg-green text-bg text-sm font-semibold px-4 py-1.5 rounded-lg hover:shadow-[0_0_20px_rgba(0,255,135,0.3)] transition-all cursor-pointer"
+        >
+          Install
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="relative min-h-screen flex items-center px-6 overflow-hidden">
+    <!-- EKG grid -->
+    <div class="ekg-grid absolute inset-0" aria-hidden="true"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-bg/80 via-transparent to-bg" aria-hidden="true"></div>
+
+    <!-- Heartbeat SVG line running across the hero -->
+    <svg class="absolute left-0 right-0 top-1/2 -translate-y-1/2 w-full h-40 pointer-events-none opacity-20" viewBox="0 0 1200 160" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M0,80 L200,80 L230,80 L250,30 L270,130 L290,60 L310,90 L330,80 L500,80 L530,80 L550,25 L570,135 L590,55 L610,95 L630,80 L800,80 L830,80 L850,20 L870,140 L890,50 L910,100 L930,80 L1200,80"
+        fill="none"
+        stroke="url(#heartbeat-gradient)"
+        stroke-width="2"
+        class="heartbeat-line"
+      />
+      <defs>
+        <linearGradient id="heartbeat-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="var(--color-green)" stop-opacity="0"/>
+          <stop offset="20%" stop-color="var(--color-green)"/>
+          <stop offset="50%" stop-color="var(--color-cyan)"/>
+          <stop offset="80%" stop-color="var(--color-green)"/>
+          <stop offset="100%" stop-color="var(--color-green)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="relative max-w-7xl mx-auto w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-0 items-center">
+
+        <!-- Left: Content (7 cols) -->
+        <div class="lg:col-span-7 text-center lg:text-left pt-24 lg:pt-0">
+          <!-- Status badge -->
+          <div class="inline-flex items-center gap-2.5 bg-surface/80 border border-border rounded-full px-4 py-2 mb-10 backdrop-blur-sm">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-green"></span>
+            </span>
+            <span class="text-text-muted text-xs font-mono tracking-wider uppercase">Monitoring active</span>
+          </div>
+
+          <h1 class="text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold tracking-[-0.03em] leading-[0.95] mb-8">
+            Your codebase<br/>
+            has a <span class="text-transparent bg-clip-text bg-gradient-to-r from-green via-cyan to-green inline-block">heartbeat.</span>
+          </h1>
+
+          <p class="text-text-muted text-lg md:text-xl leading-relaxed max-w-lg mb-12">
+            drift watches your code, detects health degradation, and uses AI to diagnose problems&mdash;like <span class="text-text font-medium">Datadog for your codebase</span>, right in your terminal.
+          </p>
+
+          <!-- Install tabs -->
+          <div class="w-full max-w-lg">
+            <div class="flex gap-1 mb-3" role="tablist" aria-label="Installation method">
+              <button role="tab" aria-selected="true" data-tab="brew" class="install-tab text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all cursor-pointer bg-green/10 border-green/20 text-green">
+                Homebrew
+              </button>
+              <button role="tab" aria-selected="false" data-tab="curl" class="install-tab text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all cursor-pointer bg-transparent border-border text-text-muted hover:text-text">
+                Shell
+              </button>
+              <button role="tab" aria-selected="false" data-tab="go" class="install-tab text-[11px] font-mono px-3 py-1.5 rounded-lg border transition-all cursor-pointer bg-transparent border-border text-text-muted hover:text-text">
+                Go
+              </button>
+            </div>
+
+            <div class="relative bg-surface/80 border border-border rounded-xl px-5 py-3.5 font-mono text-sm flex items-center gap-3 backdrop-blur-sm group hover:border-green/20 transition-colors">
+              <span class="text-green font-bold">$</span>
+              <span id="install-cmd" class="text-text/90">brew install greatnessinabox/tap/drift</span>
+              <button
+                id="copy-btn"
+                class="text-text-muted hover:text-green transition-all ml-auto cursor-pointer hover:scale-110 shrink-0"
+                aria-label="Copy install command to clipboard"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-3 mt-3">
+              <a
+                href="https://github.com/greatnessinabox/drift/releases"
+                class="text-text-muted hover:text-text text-xs font-mono transition-colors cursor-pointer"
+              >
+                Download binaries &rarr;
+              </a>
+              <span class="text-border">|</span>
+              <a
+                href="https://github.com/greatnessinabox/drift"
+                class="text-text-muted hover:text-text text-xs font-mono transition-colors cursor-pointer"
+              >
+                View on GitHub &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Health Ring (5 cols, oversized, bleeds right) -->
+        <div class="lg:col-span-5 flex justify-center lg:justify-end relative">
+          <div class="relative" aria-label="Animated health score visualization showing 93 out of 100">
+            <!-- Pulsing outer glow -->
+            <div class="absolute inset-0 bg-green/10 rounded-full ring-pulse blur-2xl scale-110" aria-hidden="true"></div>
+
+            <svg width="320" height="320" viewBox="0 0 120 120" class="drop-shadow-[0_0_60px_rgba(0,255,135,0.12)] relative z-10" style="max-width: min(320px, 80vw); height: auto;">
+              <!-- Track ring -->
+              <circle cx="60" cy="60" r="45" fill="none" stroke="var(--color-surface-2)" stroke-width="6" opacity="0.8"/>
+              <!-- Tick marks -->
+              {Array.from({ length: 60 }).map((_, i) => {
+                const angle = (i * 6 - 90) * Math.PI / 180
+                const isMajor = i % 5 === 0
+                const r1 = isMajor ? 51 : 52
+                const r2 = 54
+                return (
+                  <line
+                    x1={String(60 + r1 * Math.cos(angle))}
+                    y1={String(60 + r1 * Math.sin(angle))}
+                    x2={String(60 + r2 * Math.cos(angle))}
+                    y2={String(60 + r2 * Math.sin(angle))}
+                    stroke="var(--color-border)"
+                    stroke-width={isMajor ? "1" : "0.5"}
+                    opacity={isMajor ? "0.6" : "0.3"}
+                  />
+                )
+              })}
+              <!-- Progress arc -->
+              <circle
+                cx="60" cy="60" r="45"
+                fill="none"
+                stroke="url(#ring-grad)"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-dasharray="283"
+                stroke-dashoffset="20"
+                transform="rotate(-90 60 60)"
+                class="health-ring"
+              />
+              <defs>
+                <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--color-green)"/>
+                  <stop offset="60%" stop-color="var(--color-cyan)"/>
+                  <stop offset="100%" stop-color="var(--color-purple)"/>
+                </linearGradient>
+              </defs>
+            </svg>
+
+            <!-- Score display -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
+              <span class="text-5xl font-bold font-mono text-text tracking-tight" id="score-display">0</span>
+              <span class="text-text-muted text-[11px] font-mono mt-1.5 tracking-widest uppercase">Health Score</span>
+            </div>
+
+            <!-- Floating metric tags -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-surface border border-green/20 rounded-full px-3 py-1 text-[10px] font-mono text-green whitespace-nowrap shadow-lg shadow-green/5 tag-hover cursor-default z-30">
+              complexity: low
+            </div>
+            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-surface border border-cyan/20 rounded-full px-3 py-1 text-[10px] font-mono text-cyan whitespace-nowrap shadow-lg shadow-cyan/5 tag-hover cursor-default z-30">
+              deps: 42/42 fresh
+            </div>
+            <div class="absolute top-1/2 -left-8 -translate-y-1/2 bg-surface border border-purple/20 rounded-full px-3 py-1 text-[10px] font-mono text-purple whitespace-nowrap shadow-lg shadow-purple/5 tag-hover cursor-default z-30 hidden lg:block">
+              arch: clean
+            </div>
+            <div class="absolute top-1/2 -right-6 -translate-y-1/2 bg-surface border border-yellow/20 rounded-full px-3 py-1 text-[10px] font-mono text-yellow whitespace-nowrap shadow-lg shadow-yellow/5 tag-hover cursor-default z-30 hidden lg:block">
+              dead code: 0
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-text-muted animate-bounce">
+      <span class="text-[10px] font-mono uppercase tracking-[0.2em]">Scroll</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </section>
+
+  <!-- ═══════════ LANGUAGES ═══════════ -->
+  <section class="py-24 px-6 border-t border-border/20 relative">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center gap-4 justify-center mb-14 reveal">
+        <div class="h-px flex-1 max-w-24 bg-gradient-to-r from-transparent to-border"></div>
+        <span class="text-text-muted text-[11px] font-mono uppercase tracking-[0.25em]">Auto-detects your stack</span>
+        <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-border"></div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 stagger">
+        {[
+          { name: 'Go', file: 'go.mod', color: '#00ADD8', symbol: 'Go' },
+          { name: 'TypeScript', file: 'package.json', color: '#3178C6', symbol: 'TS' },
+          { name: 'Python', file: 'pyproject.toml', color: '#FFD43B', symbol: 'Py' },
+          { name: 'Rust', file: 'Cargo.toml', color: '#FF5C5C', symbol: 'Rs' },
+          { name: 'Java', file: 'pom.xml', color: '#F89820', symbol: 'Jv' },
+        ].map(lang => (
+          <div class="reveal-scale group cursor-default rounded-2xl border border-border bg-surface/50 p-5 text-center transition-all hover:border-border/80 hover:bg-surface" style={`--accent: ${lang.color}`}>
+            <div class="w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center font-mono font-bold text-sm" style={`background: ${lang.color}15; color: ${lang.color}; border: 1px solid ${lang.color}20`}>
+              {lang.symbol}
+            </div>
+            <span class="font-semibold text-sm text-text block mb-1">{lang.name}</span>
+            <span class="text-text-muted text-[11px] font-mono">{lang.file}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ HOW IT WORKS ═══════════ -->
+  <section class="py-24 px-6 border-t border-border/20">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-20 reveal tracking-tight">
+        Three commands. <span class="text-green">Zero config.</span>
+      </h2>
+
+      <div class="relative">
+        <!-- Connecting line -->
+        <div class="hidden md:block absolute top-8 left-[calc(16.67%+20px)] right-[calc(16.67%+20px)] h-px bg-gradient-to-r from-green/30 via-cyan/30 to-purple/30" aria-hidden="true"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 stagger">
+          {[
+            { n: '01', cmd: 'brew install greatnessinabox/tap/drift', label: 'Install', desc: 'One command via Homebrew, shell script, or go install. No config needed.', color: 'green' },
+            { n: '02', cmd: 'drift', label: 'Analyze', desc: 'Auto-detects your language and runs full health analysis instantly.', color: 'cyan' },
+            { n: '03', cmd: 'drift', label: 'Monitor', desc: 'Live TUI dashboard updates as you code. Health trends over commits.', color: 'purple' },
+          ].map((step) => (
+            <div class="reveal text-center relative">
+              <div class={`w-10 h-10 rounded-full bg-${step.color}/10 border border-${step.color}/20 flex items-center justify-center mx-auto mb-5 relative z-10`} style={`background: var(--color-bg)`}>
+                <span class={`font-mono text-${step.color} text-xs font-bold`}>{step.n}</span>
+              </div>
+              <div class="bg-surface border border-border rounded-xl px-4 py-2.5 font-mono text-xs mb-5 inline-block">
+                <span class="text-green">$</span> <span class="text-text-muted">{step.cmd}</span>
+              </div>
+              <h3 class="font-semibold text-lg mb-2">{step.label}</h3>
+              <p class="text-text-muted text-sm leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ DEMO ═══════════ -->
+  <section class="py-24 px-6 border-t border-border/20 relative">
+    <div class="max-w-5xl mx-auto reveal-scale">
+      <div class="relative group">
+        <!-- Glow behind terminal -->
+        <div class="absolute -inset-4 bg-gradient-to-b from-green/[0.04] via-cyan/[0.02] to-transparent rounded-3xl blur-2xl transition-opacity group-hover:opacity-100 opacity-60" aria-hidden="true"></div>
+
+        <div class="relative border border-border/60 rounded-2xl overflow-hidden bg-surface/80 backdrop-blur-sm shadow-2xl shadow-black/40">
+          <!-- Terminal chrome -->
+          <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border/40 bg-surface">
+            <div class="flex gap-2">
+              <div class="w-3 h-3 rounded-full bg-red/50"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow/50"></div>
+              <div class="w-3 h-3 rounded-full bg-green/50"></div>
+            </div>
+            <span class="text-text-muted text-[11px] ml-3 font-mono">drift &mdash; ~/project &mdash; 80x24</span>
+          </div>
+          <div class="p-1.5">
+            <img
+              src="/demo.gif"
+              alt="drift terminal dashboard showing real-time code health metrics including complexity scores, dependency freshness, and architecture boundary violations"
+              class="w-full rounded-lg"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURES: BENTO ═══════════ -->
+  <section class="py-24 px-6 border-t border-border/20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-20 reveal">
+        <h2 class="text-3xl md:text-4xl font-bold mb-5 tracking-tight">
+          Five dimensions of<br class="sm:hidden" />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-green via-cyan to-purple">code health</span>
+        </h2>
+        <p class="text-text-muted max-w-lg mx-auto leading-relaxed">
+          Each metric is scored, weighted, and trended over your last 10 commits.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 stagger">
+
+        <!-- ── Complexity: hero card (8 cols) ── -->
+        <div class="glow-card p-7 md:col-span-8 reveal cursor-default">
+          <div class="flex items-start justify-between mb-5">
+            <div>
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-8 h-8 rounded-lg bg-green/10 border border-green/20 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-green"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h3 class="font-semibold text-lg text-text">Cyclomatic Complexity</h3>
+              </div>
+              <p class="text-text-muted text-sm leading-relaxed max-w-md">Full AST analysis for Go, heuristic pattern matching for TypeScript, Python, Rust, and Java.</p>
+            </div>
+            <span class="text-[10px] font-mono text-green bg-green/10 border border-green/10 px-2.5 py-1 rounded-full shrink-0 ml-4 tracking-wider">WEIGHT 30%</span>
+          </div>
+
+          <!-- Live metric bars -->
+          <div class="space-y-3 mt-6 font-mono text-xs" id="metric-bars">
+            <div class="flex items-center gap-3">
+              <span class="text-text-muted w-36 truncate text-right">model.Update()</span>
+              <div class="flex-1 h-2.5 bg-surface-2 rounded-full overflow-hidden">
+                <div class="metric-bar h-full rounded-full bg-gradient-to-r from-yellow via-accent to-red" style="width: 85%;"></div>
+              </div>
+              <span class="text-accent w-8 text-right font-bold">25</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-text-muted w-36 truncate text-right">parseConfig()</span>
+              <div class="flex-1 h-2.5 bg-surface-2 rounded-full overflow-hidden">
+                <div class="metric-bar h-full rounded-full bg-gradient-to-r from-green to-cyan" style="width: 35%;"></div>
+              </div>
+              <span class="text-green w-8 text-right font-bold">8</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-text-muted w-36 truncate text-right">handleRequest()</span>
+              <div class="flex-1 h-2.5 bg-surface-2 rounded-full overflow-hidden">
+                <div class="metric-bar h-full rounded-full bg-green" style="width: 20%;"></div>
+              </div>
+              <span class="text-green w-8 text-right font-bold">5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Dependencies (4 cols) ── -->
+        <div class="glow-card p-7 md:col-span-4 reveal cursor-default flex flex-col">
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-cyan/10 border border-cyan/20 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7" stroke-linecap="round"/></svg>
+            </div>
+            <h3 class="font-semibold text-text">Dependency Freshness</h3>
+          </div>
+          <span class="text-[10px] font-mono text-cyan bg-cyan/10 border border-cyan/10 px-2.5 py-1 rounded-full inline-block w-fit mb-3 tracking-wider">WEIGHT 20%</span>
+          <p class="text-text-muted text-sm leading-relaxed flex-1">Checks every dep against Go proxy, npm, PyPI, crates.io, and Maven Central.</p>
+          <div class="mt-5 flex items-center gap-2 text-xs font-mono text-cyan">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            42/42 up to date
+          </div>
+        </div>
+
+        <!-- ── Architecture (4 cols) ── -->
+        <div class="glow-card p-7 md:col-span-4 reveal cursor-default flex flex-col">
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-purple/10 border border-purple/20 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple"><path d="M3 3h18v18H3z" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 4"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke-linecap="round" opacity="0.4"/></svg>
+            </div>
+            <h3 class="font-semibold text-text">Architecture Boundaries</h3>
+          </div>
+          <span class="text-[10px] font-mono text-purple bg-purple/10 border border-purple/10 px-2.5 py-1 rounded-full inline-block w-fit mb-3 tracking-wider">WEIGHT 20%</span>
+          <p class="text-text-muted text-sm leading-relaxed flex-1">Define import rules like &ldquo;api cannot import db&rdquo; and catch violations instantly.</p>
+          <div class="mt-5 font-mono text-[11px] text-purple/70 bg-purple/5 border border-purple/10 rounded-lg px-3 py-2">
+            api &rarr; db &nbsp;<span class="text-accent">BLOCKED</span>
+          </div>
+        </div>
+
+        <!-- ── Dead Code (4 cols) ── -->
+        <div class="glow-card p-7 md:col-span-4 reveal cursor-default flex flex-col">
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-yellow/10 border border-yellow/20 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-yellow"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6" stroke-linecap="round"/></svg>
+            </div>
+            <h3 class="font-semibold text-text">Dead Code Detection</h3>
+          </div>
+          <span class="text-[10px] font-mono text-yellow bg-yellow/10 border border-yellow/10 px-2.5 py-1 rounded-full inline-block w-fit mb-3 tracking-wider">WEIGHT 15%</span>
+          <p class="text-text-muted text-sm leading-relaxed flex-1">Finds exported functions with zero callers across your entire codebase.</p>
+          <div class="mt-5 flex items-center gap-2 text-xs font-mono text-yellow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+            3 unused exports found
+          </div>
+        </div>
+
+        <!-- ── AI (4 cols) ── -->
+        <div class="glow-card p-7 md:col-span-4 reveal cursor-default flex flex-col border-accent/10">
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" stroke-linecap="round"/><path d="M8 12a4 4 0 0 0 8 0" stroke-linecap="round"/><circle cx="9" cy="9" r="0.5" fill="currentColor"/><circle cx="15" cy="9" r="0.5" fill="currentColor"/></svg>
+            </div>
+            <h3 class="font-semibold text-text">AI Diagnostics</h3>
+          </div>
+          <span class="text-[10px] font-mono text-accent bg-accent/10 border border-accent/10 px-2.5 py-1 rounded-full inline-block w-fit mb-3 tracking-wider">CLAUDE / GPT-4o</span>
+          <p class="text-text-muted text-sm leading-relaxed flex-1">
+            Press <kbd class="px-1.5 py-0.5 bg-surface-2 border border-border rounded text-text text-[11px] font-mono">d</kbd> for AI-powered refactoring suggestions.
+          </p>
+        </div>
+
+        <!-- ── Sparklines: full width ── -->
+        <div class="glow-card p-7 md:col-span-12 reveal cursor-default">
+          <div class="flex flex-col md:flex-row md:items-center gap-8">
+            <div class="flex-1">
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-8 h-8 rounded-lg bg-green/10 border border-green/20 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-green"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h3 class="font-semibold text-text">Sparkline Trends</h3>
+              </div>
+              <p class="text-text-muted text-sm leading-relaxed max-w-md">Visualize health over the last 10 commits. Spot regressions before they compound.</p>
+            </div>
+
+            <!-- Sparkline chart -->
+            <div class="flex items-end gap-1.5 h-16" aria-label="Simulated sparkline showing improving health trend">
+              {[40, 50, 35, 55, 65, 50, 72, 68, 82, 93].map((v, i) => (
+                <div class="flex flex-col items-center gap-1">
+                  <div
+                    class="w-4 rounded-sm transition-all duration-500"
+                    style={`height: ${v * 0.6}px; background: linear-gradient(to top, rgba(0,255,135,0.3), rgba(0,255,135,${0.4 + v/150}))`}
+                  ></div>
+                  {i === 9 && <span class="text-[9px] font-mono text-text-muted">HEAD</span>}
+                </div>
+              ))}
+              <div class="flex flex-col items-center ml-3 gap-0.5">
+                <span class="text-green text-lg font-bold font-mono leading-none">+12%</span>
+                <span class="text-text-muted text-[9px] font-mono">10 commits</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ COPILOT ═══════════ -->
+  <section class="py-24 px-6 border-t border-border/20 relative">
+    <div class="ekg-grid absolute inset-0 opacity-30" aria-hidden="true"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-bg via-transparent to-bg" aria-hidden="true"></div>
+
+    <div class="relative max-w-4xl mx-auto">
+      <div class="text-center mb-20 reveal">
+        <div class="inline-flex items-center gap-2 bg-purple/10 border border-purple/20 rounded-full px-4 py-1.5 mb-6 text-purple text-xs font-mono">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          Copilot Integration
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-5 tracking-tight">
+          <span class="text-purple">GitHub Copilot</span> native
+        </h2>
+        <p class="text-text-muted max-w-lg mx-auto leading-relaxed">
+          Three levels of integration: interactive fixing, custom agents, and CI automation.
+        </p>
+      </div>
+
+      <div class="space-y-4 stagger">
+        <!-- Fix command -->
+        <div class="glow-card p-7 reveal cursor-default">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-green font-mono font-bold text-sm">drift fix</span>
+            <span class="text-[10px] text-green/80 bg-green/10 border border-green/15 px-2.5 py-0.5 rounded-full font-mono tracking-wider">INTERACTIVE</span>
+          </div>
+          <pre class="font-mono text-[13px] text-text-muted leading-relaxed overflow-x-auto"><code><span class="text-green">$</span> drift fix
+
+  Analyzing codebase... <span class="text-text">(Score: 78/100)</span>
+
+  Found <span class="text-yellow">3 issue(s)</span> to fix:
+  1. <span class="text-accent">[HIGH]</span> model.Update() in <span class="text-text">app.go:126</span> (complexity: 25)
+
+  Asking GitHub Copilot for suggestions...
+  <span class="text-green">Apply this suggestion? [y/N/s(kip rest)]</span></code></pre>
+        </div>
+
+        <!-- Agent -->
+        <div class="glow-card p-7 reveal cursor-default">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-cyan font-mono font-bold text-sm">@drift-dev</span>
+            <span class="text-[10px] text-cyan/80 bg-cyan/10 border border-cyan/15 px-2.5 py-0.5 rounded-full font-mono tracking-wider">CUSTOM AGENT</span>
+          </div>
+          <pre class="font-mono text-[13px] text-text-muted leading-relaxed overflow-x-auto"><code><span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"analyze internal/tui/app.go"</span>
+<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"suggest refactoring for Update()"</span>
+<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"help me add C# analyzer support"</span></code></pre>
+        </div>
+
+        <!-- CI -->
+        <div class="glow-card p-7 reveal cursor-default">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-yellow font-mono font-bold text-sm">GitHub Action</span>
+            <span class="text-[10px] text-yellow/80 bg-yellow/10 border border-yellow/15 px-2.5 py-0.5 rounded-full font-mono tracking-wider">CI/CD</span>
+          </div>
+          <pre class="font-mono text-[13px] text-text-muted leading-relaxed overflow-x-auto"><code><span class="text-purple">- uses:</span> actions/setup-go@v5
+<span class="text-purple">- run:</span> go install github.com/greatnessinabox/drift@latest
+<span class="text-purple">- run:</span> drift check <span class="text-yellow">--fail-under 70</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CTA ═══════════ -->
+  <section class="relative py-32 px-6 border-t border-border/20 overflow-hidden">
+    <div class="ekg-grid absolute inset-0 opacity-20" aria-hidden="true"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-bg via-green/[0.015] to-bg" aria-hidden="true"></div>
+
+    <div class="relative max-w-2xl mx-auto text-center reveal">
+      <h2 class="text-4xl md:text-5xl font-bold mb-5 tracking-tight">
+        Start monitoring in<br/><span class="text-green font-mono">10 seconds</span>
+      </h2>
+      <p class="text-text-muted mb-14 text-lg">No config files. No setup wizards. Just run it.</p>
+
+      <!-- Terminal block -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden text-left mb-14 shadow-2xl shadow-black/30 max-w-lg mx-auto">
+        <div class="flex items-center gap-2 px-5 py-3 border-b border-border/40">
+          <div class="flex gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-red/50"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-yellow/50"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-green/50"></div>
+          </div>
+          <span class="text-text-muted text-[10px] ml-3 font-mono">terminal</span>
+        </div>
+        <div class="p-6 font-mono text-sm space-y-2.5">
+          <div><span class="text-green font-bold">$</span> brew install greatnessinabox/tap/drift</div>
+          <div><span class="text-green font-bold">$</span> <span class="text-text-muted">cd your-project</span></div>
+          <div><span class="text-green font-bold">$</span> drift</div>
+          <div class="text-green pt-3 flex items-center gap-2 border-t border-border/30 mt-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            codebase health monitor &mdash; 93/100
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="https://github.com/greatnessinabox/drift"
+          class="bg-green text-bg font-bold px-10 py-4 rounded-xl text-base hover:shadow-[0_0_40px_rgba(0,255,135,0.25)] transition-all cursor-pointer hover:-translate-y-0.5"
+        >
+          Get Started
+        </a>
+        <a
+          href="https://github.com/greatnessinabox/drift#configuration"
+          class="border border-border px-10 py-4 rounded-xl font-medium hover:border-green/20 hover:text-green transition-all cursor-pointer group"
+        >
+          Read the Docs <span class="inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="py-12 px-6 border-t border-border/20">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2.5 font-mono text-sm text-text-muted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-green">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-green">drift</span> by <a href="https://github.com/greatnessinabox" class="text-text hover:text-green transition-colors cursor-pointer">Marquis Nobles</a>
+      </div>
+      <div class="flex items-center gap-8 text-sm text-text-muted">
+        <a href="https://github.com/greatnessinabox/drift" class="hover:text-text transition-colors cursor-pointer">GitHub</a>
+        <a href="https://github.com/greatnessinabox/drift/blob/main/LICENSE" class="hover:text-text transition-colors cursor-pointer">MIT License</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════ SCRIPTS ═══════════ -->
+  <script>
+    // ── Install tab commands ──
+    const installCommands: Record<string, string> = {
+      brew: 'brew install greatnessinabox/tap/drift',
+      curl: 'curl -fsSL https://raw.githubusercontent.com/greatnessinabox/drift/main/install.sh | sh',
+      go: 'go install github.com/greatnessinabox/drift@latest',
+    }
+
+    let activeTab = 'brew'
+    const cmdEl = document.getElementById('install-cmd')
+    const tabs = document.querySelectorAll('.install-tab')
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const id = (tab as HTMLElement).dataset.tab!
+        activeTab = id
+
+        // Update active state
+        tabs.forEach(t => {
+          const isActive = (t as HTMLElement).dataset.tab === id
+          t.setAttribute('aria-selected', String(isActive))
+          t.className = t.className
+            .replace(/bg-green\/10|bg-transparent/g, isActive ? 'bg-green/10' : 'bg-transparent')
+            .replace(/border-green\/20|border-border/g, isActive ? 'border-green/20' : 'border-border')
+            .replace(/text-green|text-text-muted/g, isActive ? 'text-green' : 'text-text-muted')
+        })
+
+        if (cmdEl) cmdEl.textContent = installCommands[id]
+      })
+    })
+
+    // ── Copy to clipboard ──
+    const copyIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'
+    const checkIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
+    document.getElementById('copy-btn')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(installCommands[activeTab])
+      const btn = document.getElementById('copy-btn')
+      if (btn) {
+        btn.innerHTML = checkIcon
+        btn.classList.add('text-green')
+        setTimeout(() => {
+          btn.innerHTML = copyIcon
+          btn.classList.remove('text-green')
+        }, 2000)
+      }
+    })
+
+    // ── Scroll reveal ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible')
+          revealObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' })
+
+    document.querySelectorAll('.reveal, .reveal-scale').forEach(el => revealObserver.observe(el))
+
+    // ── Metric bar reveal ──
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.metric-bar').forEach((bar, i) => {
+            setTimeout(() => bar.classList.add('visible'), i * 200)
+          })
+          barObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.3 })
+
+    const metricBars = document.getElementById('metric-bars')
+    if (metricBars) barObserver.observe(metricBars)
+
+    // ── Animated score counter ──
+    const scoreEl = document.getElementById('score-display')
+    if (scoreEl) {
+      const target = 93
+      const duration = 2500
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      if (prefersReducedMotion) {
+        scoreEl.textContent = String(target)
+      } else {
+        const start = performance.now()
+        function tick(now: number) {
+          const elapsed = now - start
+          const progress = Math.min(elapsed / duration, 1)
+          const eased = 1 - Math.pow(1 - progress, 4)
+          scoreEl!.textContent = String(Math.round(eased * target))
+          if (progress < 1) requestAnimationFrame(tick)
+        }
+        // Delay to sync with ring animation
+        setTimeout(() => requestAnimationFrame(tick), 800)
+      }
+    }
+  </script>
+</Layout>

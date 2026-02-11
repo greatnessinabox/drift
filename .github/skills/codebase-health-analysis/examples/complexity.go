@@ -1,6 +1,6 @@
 package examples
 
-// This file demonstrates cyclomatic complexity patterns for the go-health-analysis skill.
+// This file demonstrates cyclomatic complexity patterns for the codebase-health-analysis skill.
 
 // SimpleFunction has complexity 1 (base only)
 func SimpleFunction() int {
