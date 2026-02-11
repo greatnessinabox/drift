@@ -29,7 +29,7 @@ jobs:
 
       - name: Install drift
         run: |
-          go install github.com/greatnessinabox/drift/cmd/drift@latest
+          go install ./cmd/drift/
           drift --version
 
       - name: Run drift analysis
