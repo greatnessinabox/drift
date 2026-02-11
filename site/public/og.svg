@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06060b"/>
+      <stop offset="100%" stop-color="#0e0e16"/>
+    </linearGradient>
+    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00ff87" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#00ff87"/>
+      <stop offset="50%" stop-color="#00e5ff"/>
+      <stop offset="80%" stop-color="#00ff87"/>
+      <stop offset="100%" stop-color="#00ff87" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff87"/>
+      <stop offset="60%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#b47aff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-grad)"/>
+
+  <!-- Grid -->
+  <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+    <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(0,255,135,0.04)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Heartbeat line across middle -->
+  <path d="M0,340 L300,340 L340,340 L370,280 L400,400 L430,310 L460,350 L490,340 L700,340 L740,340 L770,275 L800,405 L830,305 L860,355 L890,340 L1200,340" fill="none" stroke="url(#line-grad)" stroke-width="2.5" opacity="0.25"/>
+
+  <!-- Logo mark -->
+  <g transform="translate(100, 200)">
+    <path d="M50 30H38L30 52L18 8L10 30H-2" fill="none" stroke="#00ff87" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text: drift -->
+  <text x="160" y="240" font-family="monospace" font-weight="700" font-size="42" fill="#00ff87">drift</text>
+
+  <!-- Tagline -->
+  <text x="100" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="56" fill="#e8e8f0" letter-spacing="-2">Your codebase has a heartbeat.</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="360" font-family="system-ui, sans-serif" font-size="24" fill="#7a7a94">Real-time code health monitoring with AI diagnostics</text>
+
+  <!-- Health Ring -->
+  <g transform="translate(980, 230)">
+    <circle cx="0" cy="0" r="80" fill="none" stroke="#16161f" stroke-width="10"/>
+    <circle cx="0" cy="0" r="80" fill="none" stroke="url(#ring-grad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="35" transform="rotate(-90)"/>
+    <text x="0" y="8" text-anchor="middle" font-family="monospace" font-weight="700" font-size="48" fill="#e8e8f0">93</text>
+    <text x="0" y="30" text-anchor="middle" font-family="monospace" font-size="12" fill="#7a7a94" letter-spacing="2">HEALTH</text>
+  </g>
+
+  <!-- Language badges -->
+  <g transform="translate(100, 420)">
+    <rect x="0" y="0" width="52" height="30" rx="8" fill="rgba(0,173,216,0.15)" stroke="rgba(0,173,216,0.3)" stroke-width="1"/>
+    <text x="26" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#00ADD8">Go</text>
+
+    <rect x="66" y="0" width="52" height="30" rx="8" fill="rgba(49,120,198,0.15)" stroke="rgba(49,120,198,0.3)" stroke-width="1"/>
+    <text x="92" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#3178C6">TS</text>
+
+    <rect x="132" y="0" width="52" height="30" rx="8" fill="rgba(255,212,59,0.15)" stroke="rgba(255,212,59,0.3)" stroke-width="1"/>
+    <text x="158" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#FFD43B">Py</text>
+
+    <rect x="198" y="0" width="52" height="30" rx="8" fill="rgba(255,92,92,0.15)" stroke="rgba(255,92,92,0.3)" stroke-width="1"/>
+    <text x="224" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#FF5C5C">Rs</text>
+
+    <rect x="264" y="0" width="52" height="30" rx="8" fill="rgba(248,152,32,0.15)" stroke="rgba(248,152,32,0.3)" stroke-width="1"/>
+    <text x="290" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#F89820">Jv</text>
+  </g>
+
+  <!-- URL -->
+  <text x="100" y="560" font-family="monospace" font-size="18" fill="#7a7a94">drift.marquis.codes</text>
+</svg>

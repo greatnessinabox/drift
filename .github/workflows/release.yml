@@ -25,4 +25,6 @@ jobs:
           version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # HOMEBREW_TAP_TOKEN: a PAT with repo scope, needed to push to homebrew-tap
+          # Falls back to GITHUB_TOKEN (releases work, but homebrew tap push will be skipped)
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN != '' && secrets.HOMEBREW_TAP_TOKEN || secrets.GITHUB_TOKEN }}

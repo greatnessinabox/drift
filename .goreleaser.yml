@@ -16,16 +16,19 @@ builds:
       - -s -w
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
-brews:
+homebrew_casks:
   - repository:
       owner: greatnessinabox
       name: homebrew-tap
+    directory: Casks
     homepage: https://github.com/greatnessinabox/drift
     description: Real-time polyglot codebase health dashboard
     license: MIT

@@ -28,6 +28,15 @@ html {
   color: var(--color-text);
 }
 
+/* Hide scrollbar but keep scrollable */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Grid background: EKG monitor style ── */
 .ekg-grid {
   background-image:

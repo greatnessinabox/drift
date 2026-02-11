@@ -1,0 +1,344 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout
+  title="Documentation — drift"
+  description="Installation, configuration, CLI reference, and usage guide for drift — the real-time codebase health dashboard."
+>
+  <!-- Nav -->
+  <nav class="fixed top-5 left-5 right-5 z-50 border border-border/40 bg-bg/60 backdrop-blur-2xl rounded-2xl">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="/" class="font-mono font-bold text-base text-green flex items-center gap-2.5 cursor-pointer group">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-green transition-transform duration-300 group-hover:scale-110">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        drift
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/docs" class="text-green text-sm font-medium cursor-pointer">Docs</a>
+        <a href="https://github.com/greatnessinabox/drift" class="text-text-muted hover:text-text transition-colors cursor-pointer p-2 rounded-lg hover:bg-surface" aria-label="View drift on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-32 pb-24 px-6">
+    <div class="max-w-3xl mx-auto">
+
+      <!-- Header -->
+      <div class="mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Documentation</h1>
+        <p class="text-text-muted text-lg leading-relaxed">Everything you need to install, configure, and use drift.</p>
+      </div>
+
+      <!-- Table of contents -->
+      <nav class="mb-16 bg-surface border border-border rounded-2xl p-6" aria-label="Table of contents">
+        <p class="text-[11px] font-mono uppercase tracking-widest text-text-muted mb-4">On this page</p>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#install" class="text-text-muted hover:text-green transition-colors cursor-pointer">Installation</a></li>
+          <li><a href="#quick-start" class="text-text-muted hover:text-green transition-colors cursor-pointer">Quick Start</a></li>
+          <li><a href="#configuration" class="text-text-muted hover:text-green transition-colors cursor-pointer">Configuration</a></li>
+          <li><a href="#cli-reference" class="text-text-muted hover:text-green transition-colors cursor-pointer">CLI Reference</a></li>
+          <li><a href="#health-metrics" class="text-text-muted hover:text-green transition-colors cursor-pointer">Health Metrics</a></li>
+          <li><a href="#ai-diagnostics" class="text-text-muted hover:text-green transition-colors cursor-pointer">AI Diagnostics</a></li>
+          <li><a href="#copilot" class="text-text-muted hover:text-green transition-colors cursor-pointer">GitHub Copilot Integration</a></li>
+          <li><a href="#ci-cd" class="text-text-muted hover:text-green transition-colors cursor-pointer">CI/CD</a></li>
+          <li><a href="#keyboard-shortcuts" class="text-text-muted hover:text-green transition-colors cursor-pointer">Keyboard Shortcuts</a></li>
+        </ul>
+      </nav>
+
+      <!-- Content -->
+      <div class="space-y-20">
+
+        <!-- Install -->
+        <section id="install">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">01</span>
+            Installation
+          </h2>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Homebrew (recommended)</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> brew install greatnessinabox/tap/drift</code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Shell script</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> curl -fsSL https://raw.githubusercontent.com/greatnessinabox/drift/main/install.sh | sh</code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Go install</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> go install github.com/greatnessinabox/drift/cmd/drift@latest</code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Build from source</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-green">$</span> git clone https://github.com/greatnessinabox/drift.git
+<span class="text-green">$</span> cd drift
+<span class="text-green">$</span> go build ./cmd/drift/</code></pre>
+        </section>
+
+        <!-- Quick Start -->
+        <section id="quick-start">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">02</span>
+            Quick Start
+          </h2>
+
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-text-muted"># Run the live dashboard in any supported project</span>
+<span class="text-green">$</span> cd your-project
+<span class="text-green">$</span> drift
+
+<span class="text-text-muted"># Generate a report</span>
+<span class="text-green">$</span> drift report
+
+<span class="text-text-muted"># Check health (for CI)</span>
+<span class="text-green">$</span> drift check --fail-under 70
+
+<span class="text-text-muted"># Interactive fix with GitHub Copilot CLI</span>
+<span class="text-green">$</span> drift fix</code></pre>
+
+          <p class="text-text-muted text-sm leading-relaxed">
+            drift auto-detects the language by checking for manifest files (<code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">go.mod</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">package.json</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">Cargo.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pyproject.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pom.xml</code>). Supports <strong class="text-text">Go</strong>, <strong class="text-text">TypeScript/JavaScript</strong>, <strong class="text-text">Python</strong>, <strong class="text-text">Rust</strong>, and <strong class="text-text">Java</strong>.
+          </p>
+        </section>
+
+        <!-- Configuration -->
+        <section id="configuration">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">03</span>
+            Configuration
+          </h2>
+
+          <p class="text-text-muted text-sm leading-relaxed mb-6">
+            Create a <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">.drift.yaml</code> in your project root. All fields are optional &mdash; drift works with zero config.
+          </p>
+
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-text-muted"># Language (empty = auto-detect)</span>
+<span class="text-purple">language:</span> <span class="text-yellow">""</span>
+
+<span class="text-text-muted"># Directories to exclude</span>
+<span class="text-purple">exclude:</span>
+  - vendor
+  - node_modules
+  - .git
+  - __pycache__
+  - target
+
+<span class="text-text-muted"># Metric weights (must sum to 1.0)</span>
+<span class="text-purple">weights:</span>
+  <span class="text-purple">complexity:</span> <span class="text-cyan">0.30</span>
+  <span class="text-purple">deps:</span> <span class="text-cyan">0.20</span>
+  <span class="text-purple">boundaries:</span> <span class="text-cyan">0.20</span>
+  <span class="text-purple">dead_code:</span> <span class="text-cyan">0.15</span>
+  <span class="text-purple">coverage:</span> <span class="text-cyan">0.15</span>
+
+<span class="text-text-muted"># Architecture boundary rules</span>
+<span class="text-purple">boundaries:</span>
+  - <span class="text-purple">deny:</span> <span class="text-yellow">"pkg/api -> internal/db"</span>
+  - <span class="text-purple">deny:</span> <span class="text-yellow">"cmd -> internal/tui"</span>
+
+<span class="text-text-muted"># AI diagnostics (optional)</span>
+<span class="text-purple">ai:</span>
+  <span class="text-purple">provider:</span> anthropic  <span class="text-text-muted"># or "openai"</span>
+  <span class="text-purple">model:</span> <span class="text-yellow">""</span>            <span class="text-text-muted"># uses sensible defaults</span>
+
+<span class="text-text-muted"># Thresholds</span>
+<span class="text-purple">thresholds:</span>
+  <span class="text-purple">max_complexity:</span> <span class="text-cyan">15</span>
+  <span class="text-purple">max_stale_days:</span> <span class="text-cyan">90</span>
+  <span class="text-purple">min_score:</span> <span class="text-cyan">70</span></code></pre>
+        </section>
+
+        <!-- CLI Reference -->
+        <section id="cli-reference">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">04</span>
+            CLI Reference
+          </h2>
+
+          <div class="space-y-4">
+            {[
+              { cmd: 'drift', desc: 'Launch the interactive TUI dashboard. Auto-detects language and starts real-time monitoring.' },
+              { cmd: 'drift watch', desc: 'Same as drift — watch mode is the default. Re-analyzes as files change.' },
+              { cmd: 'drift report', desc: 'Generate a one-shot health report to stdout. Useful for quick checks.' },
+              { cmd: 'drift check --fail-under <score>', desc: 'Exit with code 1 if health score is below the threshold. Designed for CI pipelines.' },
+              { cmd: 'drift fix', desc: 'Interactive mode — finds issues, asks GitHub Copilot for fixes, and lets you apply them one by one.' },
+              { cmd: 'drift snapshot', desc: 'Output full health data as JSON. Useful for scripting and advanced CI workflows.' },
+            ].map(item => (
+              <div class="bg-surface border border-border rounded-xl p-5">
+                <code class="text-green text-sm font-mono font-bold">{item.cmd}</code>
+                <p class="text-text-muted text-sm mt-2 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Health Metrics -->
+        <section id="health-metrics">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">05</span>
+            Health Metrics
+          </h2>
+
+          <p class="text-text-muted text-sm leading-relaxed mb-6">
+            The overall health score is a weighted average of five dimensions. Weights are configurable in <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">.drift.yaml</code>.
+          </p>
+
+          <div class="space-y-4">
+            {[
+              { name: 'Cyclomatic Complexity', weight: '30%', color: 'green', desc: 'Full AST analysis for Go, heuristic pattern matching for TS, Python, Rust, Java. Finds your most complex functions.' },
+              { name: 'Dependency Freshness', weight: '20%', color: 'cyan', desc: 'Checks every dependency against its registry — Go proxy, npm, PyPI, crates.io, Maven Central.' },
+              { name: 'Architecture Boundaries', weight: '20%', color: 'purple', desc: 'Define import deny rules (e.g., "api cannot import db") and detect violations.' },
+              { name: 'Dead Code', weight: '15%', color: 'yellow', desc: 'Finds exported functions/types with zero callers across the entire codebase.' },
+              { name: 'Test Coverage', weight: '15%', color: 'accent', desc: 'Reads coverage data from language-specific tools and factors it into the score.' },
+            ].map(m => (
+              <div class="bg-surface border border-border rounded-xl p-5 flex items-start gap-4">
+                <span class={`text-[10px] font-mono text-${m.color} bg-${m.color}/10 border border-${m.color}/10 px-2.5 py-1 rounded-full shrink-0 tracking-wider`}>{m.weight}</span>
+                <div>
+                  <h3 class={`font-semibold text-sm text-${m.color} mb-1`}>{m.name}</h3>
+                  <p class="text-text-muted text-sm leading-relaxed">{m.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- AI Diagnostics -->
+        <section id="ai-diagnostics">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">06</span>
+            AI Diagnostics
+          </h2>
+
+          <p class="text-text-muted text-sm leading-relaxed mb-6">
+            Press <kbd class="px-1.5 py-0.5 bg-surface-2 border border-border rounded text-text text-[11px] font-mono">d</kbd> in the dashboard to trigger an AI diagnosis. The AI analyzes your worst-scoring metrics and provides specific, actionable recommendations with code snippets.
+          </p>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Supported providers</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="bg-surface border border-border rounded-xl p-5">
+              <h4 class="font-semibold text-sm mb-2">Anthropic Claude</h4>
+              <p class="text-text-muted text-xs mb-3">Sonnet, Opus, Haiku</p>
+              <code class="text-[11px] font-mono text-green">ANTHROPIC_API_KEY</code>
+            </div>
+            <div class="bg-surface border border-border rounded-xl p-5">
+              <h4 class="font-semibold text-sm mb-2">OpenAI GPT-4o</h4>
+              <p class="text-text-muted text-xs mb-3">GPT-4o, o1</p>
+              <code class="text-[11px] font-mono text-green">OPENAI_API_KEY</code>
+            </div>
+          </div>
+
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-text-muted"># .drift.yaml</span>
+<span class="text-purple">ai:</span>
+  <span class="text-purple">provider:</span> anthropic  <span class="text-text-muted"># or "openai"</span>
+  <span class="text-purple">model:</span> <span class="text-yellow">""</span>            <span class="text-text-muted"># uses sensible defaults</span></code></pre>
+        </section>
+
+        <!-- Copilot -->
+        <section id="copilot">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">07</span>
+            GitHub Copilot Integration
+          </h2>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Interactive fixing</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> drift fix
+
+  Analyzing codebase... <span class="text-text">(Score: 78/100)</span>
+
+  Found <span class="text-yellow">3 issue(s)</span> to fix:
+  1. <span class="text-accent">[HIGH]</span> model.Update() in <span class="text-text">app.go:126</span> (complexity: 25)
+
+  Asking GitHub Copilot for suggestions...
+  <span class="text-green">Apply this suggestion? [y/N/s(kip rest)]</span></code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Custom agent</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"analyze internal/tui/app.go"</span>
+<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"suggest refactoring for Update()"</span>
+<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"help me add C# analyzer support"</span></code></pre>
+
+          <p class="text-text-muted text-sm leading-relaxed">
+            Requires <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">gh extension install github/gh-copilot</code>. drift also works with any AI coding assistant &mdash; see the <a href="https://github.com/greatnessinabox/drift/blob/main/.github/AI_AGENTS.md" class="text-green hover:underline">multi-agent guide</a>.
+          </p>
+        </section>
+
+        <!-- CI/CD -->
+        <section id="ci-cd">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">08</span>
+            CI/CD
+          </h2>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Basic GitHub Action</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-text-muted"># .github/workflows/drift.yml</span>
+<span class="text-purple">name:</span> Code Health
+<span class="text-purple">on:</span> [pull_request]
+
+<span class="text-purple">jobs:</span>
+  <span class="text-purple">drift:</span>
+    <span class="text-purple">runs-on:</span> ubuntu-latest
+    <span class="text-purple">steps:</span>
+      - <span class="text-purple">uses:</span> actions/checkout@v4
+      - <span class="text-purple">uses:</span> actions/setup-go@v5
+        <span class="text-purple">with:</span>
+          <span class="text-purple">go-version-file:</span> go.mod
+      - <span class="text-purple">run:</span> go install github.com/greatnessinabox/drift/cmd/drift@latest
+      - <span class="text-purple">run:</span> drift check <span class="text-yellow">--fail-under 70</span></code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Advanced: JSON snapshot</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-green">$</span> SCORE=$(drift snapshot | jq '.score.total')
+<span class="text-green">$</span> LANG=$(drift snapshot | jq -r '.language')
+<span class="text-green">$</span> echo <span class="text-yellow">"Language: $LANG, Score: $SCORE"</span></code></pre>
+        </section>
+
+        <!-- Keyboard Shortcuts -->
+        <section id="keyboard-shortcuts">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">09</span>
+            Keyboard Shortcuts
+          </h2>
+
+          <div class="bg-surface border border-border rounded-xl overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border/50">
+                  <th class="text-left px-5 py-3 text-text-muted font-mono text-xs uppercase tracking-wider">Key</th>
+                  <th class="text-left px-5 py-3 text-text-muted font-mono text-xs uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border/30">
+                {[
+                  { key: 'tab', action: 'Navigate between panels' },
+                  { key: 'shift+tab', action: 'Navigate backwards' },
+                  { key: 'd', action: 'Run AI diagnosis' },
+                  { key: 'r', action: 'Force full re-analysis' },
+                  { key: 'q / ctrl+c', action: 'Quit' },
+                  { key: 'esc', action: 'Close diagnosis overlay' },
+                ].map(s => (
+                  <tr>
+                    <td class="px-5 py-3"><kbd class="px-2 py-0.5 bg-surface-2 border border-border rounded text-text text-xs font-mono">{s.key}</kbd></td>
+                    <td class="px-5 py-3 text-text-muted">{s.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 border-t border-border/20">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2.5 font-mono text-sm text-text-muted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-green">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-green">drift</span> by <a href="https://github.com/greatnessinabox" class="text-text hover:text-green transition-colors cursor-pointer">Marquis Nobles</a>
+      </div>
+      <div class="flex items-center gap-8 text-sm text-text-muted">
+        <a href="https://github.com/greatnessinabox/drift" class="hover:text-text transition-colors cursor-pointer">GitHub</a>
+        <a href="https://github.com/greatnessinabox/drift/blob/main/LICENSE" class="hover:text-text transition-colors cursor-pointer">MIT License</a>
+      </div>
+    </div>
+  </footer>
+</Layout>
