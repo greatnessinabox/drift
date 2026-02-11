@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openai/openai-go"
 	"github.com/greatnessinabox/drift/internal/config"
+	"github.com/openai/openai-go"
 )
 
 type OpenAIProvider struct {

@@ -4,17 +4,17 @@ import "github.com/charmbracelet/lipgloss"
 
 var (
 	// Color palette
-	colorGreen   = lipgloss.Color("#00FF87")
-	colorYellow  = lipgloss.Color("#FFD700")
-	colorRed     = lipgloss.Color("#FF6B6B")
-	colorCyan    = lipgloss.Color("#00E5FF")
-	colorDim     = lipgloss.Color("#666666")
-	colorWhite   = lipgloss.Color("#FAFAFA")
-	colorBg      = lipgloss.Color("#1A1A2E")
-	colorPanel   = lipgloss.Color("#16213E")
-	colorAccent  = lipgloss.Color("#E94560")
-	colorPurple  = lipgloss.Color("#A855F7")
-	colorBorder  = lipgloss.Color("#333366")
+	colorGreen  = lipgloss.Color("#00FF87")
+	colorYellow = lipgloss.Color("#FFD700")
+	colorRed    = lipgloss.Color("#FF6B6B")
+	colorCyan   = lipgloss.Color("#00E5FF")
+	colorDim    = lipgloss.Color("#666666")
+	colorWhite  = lipgloss.Color("#FAFAFA")
+	colorBg     = lipgloss.Color("#1A1A2E")
+	colorPanel  = lipgloss.Color("#16213E")
+	colorAccent = lipgloss.Color("#E94560")
+	colorPurple = lipgloss.Color("#A855F7")
+	colorBorder = lipgloss.Color("#333366")
 
 	// Title
 	titleStyle = lipgloss.NewStyle().

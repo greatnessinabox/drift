@@ -70,7 +70,7 @@ func (a *Analyzer) Walk(maxCommits int) (*SparklineData, error) {
 	// Analyze commits from oldest to newest
 	for i := len(commits) - 1; i >= 0; i-- {
 		commit := commits[i]
-		
+
 		results, err := a.analyzeCommit(commit)
 		if err != nil {
 			// Skip commits that fail to analyze

@@ -39,7 +39,7 @@ func BuildDiagnosisPrompt(cfg *config.Config, score health.Score, results *analy
 			fc := results.Complexity[i]
 			sb.WriteString(fmt.Sprintf("  - %s() in %s:%d — cyclomatic complexity %d\n",
 				fc.Name, fc.File, fc.Line, fc.Complexity))
-			
+
 			// Include code snippet for worst functions
 			if snippet := getCodeSnippet(cfg.Root, fc.File, fc.Line, 10); snippet != "" {
 				sb.WriteString(fmt.Sprintf("\n```%s\n%s\n```\n\n", lang, snippet))
@@ -80,7 +80,7 @@ func BuildDiagnosisPrompt(cfg *config.Config, score health.Score, results *analy
 func getCodeSnippet(root, filename string, startLine, numLines int) string {
 	// Try to find the file
 	fullPath := filepath.Join(root, filename)
-	
+
 	// If not found, search for it
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		// Search for the file in the root directory

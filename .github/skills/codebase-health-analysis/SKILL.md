@@ -101,7 +101,7 @@ total = complexity_score * 0.30
 
 ```bash
 # Install drift
-go install github.com/greatnessinabox/drift@latest
+go install github.com/greatnessinabox/drift/cmd/drift@latest
 
 # Run in any supported project
 cd /path/to/project

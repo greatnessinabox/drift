@@ -61,7 +61,7 @@ type pomProject struct {
 type pomDep struct {
 	GroupID    string `xml:"groupId"`
 	ArtifactID string `xml:"artifactId"`
-	Version   string `xml:"version"`
+	Version    string `xml:"version"`
 }
 
 func (j *JavaAnalyzer) AnalyzeDeps(root string) ([]DepStatus, error) {

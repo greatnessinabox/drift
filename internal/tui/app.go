@@ -52,9 +52,9 @@ type model struct {
 	spinner  spinner.Model
 
 	// Animation
-	displayScore  float64
-	targetScore   float64
-	animating     bool
+	displayScore float64
+	targetScore  float64
+	animating    bool
 
 	// AI diagnosis
 	showDiagnosis bool
@@ -269,7 +269,7 @@ func (m *model) viewScore() string {
 	for i := 0; i < filled; i++ {
 		// Calculate color based on position in bar (gradient effect)
 		position := float64(i) / float64(barWidth) * 100.0
-		
+
 		var style lipgloss.Style
 		if position >= 80 {
 			style = lipgloss.NewStyle().Foreground(colorGreen)
@@ -284,7 +284,7 @@ func (m *model) viewScore() string {
 		} else {
 			style = lipgloss.NewStyle().Foreground(colorRed)
 		}
-		
+
 		bar += style.Render("█")
 	}
 	for i := 0; i < empty; i++ {

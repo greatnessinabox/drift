@@ -126,5 +126,5 @@ Sleep 1s
 # Clear and show final message
 Ctrl+L
 Sleep 500ms
-Type "# go install github.com/greatnessinabox/drift@latest"
+Type "# go install github.com/greatnessinabox/drift/cmd/drift@latest"
 Sleep 3s

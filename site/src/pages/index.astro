@@ -510,7 +510,7 @@ import Layout from '../layouts/Layout.astro'
             <span class="text-[10px] text-yellow/80 bg-yellow/10 border border-yellow/15 px-2.5 py-0.5 rounded-full font-mono tracking-wider">CI/CD</span>
           </div>
           <pre class="font-mono text-[13px] text-text-muted leading-relaxed overflow-x-auto"><code><span class="text-purple">- uses:</span> actions/setup-go@v5
-<span class="text-purple">- run:</span> go install github.com/greatnessinabox/drift@latest
+<span class="text-purple">- run:</span> go install github.com/greatnessinabox/drift/cmd/drift@latest
 <span class="text-purple">- run:</span> drift check <span class="text-yellow">--fail-under 70</span></code></pre>
         </div>
       </div>
@@ -588,7 +588,7 @@ import Layout from '../layouts/Layout.astro'
     const installCommands: Record<string, string> = {
       brew: 'brew install greatnessinabox/tap/drift',
       curl: 'curl -fsSL https://raw.githubusercontent.com/greatnessinabox/drift/main/install.sh | sh',
-      go: 'go install github.com/greatnessinabox/drift@latest',
+      go: 'go install github.com/greatnessinabox/drift/cmd/drift@latest',
     }
 
     let activeTab = 'brew'

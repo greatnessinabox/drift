@@ -66,7 +66,7 @@ language: typescript  # or "go", "python", "rust", "java"
 ## Install
 
 ```bash
-go install github.com/greatnessinabox/drift@latest
+go install github.com/greatnessinabox/drift/cmd/drift@latest
 ```
 
 Or build from source:
@@ -156,7 +156,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go install github.com/greatnessinabox/drift@latest
+      - run: go install github.com/greatnessinabox/drift/cmd/drift@latest
       - run: drift check --fail-under 70
 ```
 
@@ -250,7 +250,7 @@ Use the `snapshot` command for advanced workflows:
 # Advanced CI integration with JSON output
 - name: Check codebase health
   run: |
-    go install github.com/greatnessinabox/drift@latest
+    go install github.com/greatnessinabox/drift/cmd/drift@latest
     SCORE=$(drift snapshot | jq '.score.total')
     LANG=$(drift snapshot | jq -r '.language')
     echo "Language: $LANG, Score: $SCORE"

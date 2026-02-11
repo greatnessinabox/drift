@@ -11,7 +11,7 @@ func TestCalcComplexity_EmptyFunction(t *testing.T) {
 	src := `package main
 func empty() {
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 1 {
 		t.Errorf("expected complexity 1, got %d", complexity)
@@ -25,7 +25,7 @@ func withIf(x int) {
 		return
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
 		t.Errorf("expected complexity 2, got %d", complexity)
@@ -42,7 +42,7 @@ func multipleIf(x, y int) {
 		return
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 3 {
 		t.Errorf("expected complexity 3 (1 base + 2 if), got %d", complexity)
@@ -58,7 +58,7 @@ func nestedIf(x, y int) {
 		}
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 3 {
 		t.Errorf("expected complexity 3 (1 base + 2 if), got %d", complexity)
@@ -72,7 +72,7 @@ func withFor() {
 		println(i)
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
 		t.Errorf("expected complexity 2, got %d", complexity)
@@ -86,7 +86,7 @@ func withRange(items []int) {
 		println(item)
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
 		t.Errorf("expected complexity 2, got %d", complexity)
@@ -107,7 +107,7 @@ func withSwitch(x int) {
 		return
 	}
 }`
-	
+
 	// Each case (except default if it has no condition) adds 1
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 4 {
@@ -125,7 +125,7 @@ func withTypeSwitch(x interface{}) {
 		return
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 4 {
 		t.Errorf("expected complexity 4 (1 base + 1 type switch + 2 cases), got %d", complexity)
@@ -142,7 +142,7 @@ func withSelect(ch1, ch2 chan int) {
 		println(y)
 	}
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 4 {
 		t.Errorf("expected complexity 4 (1 base + 1 select + 2 cases), got %d", complexity)
@@ -154,7 +154,7 @@ func TestCalcComplexity_LogicalAnd(t *testing.T) {
 func withAnd(x, y bool) bool {
 	return x && y
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
 		t.Errorf("expected complexity 2 (1 base + 1 &&), got %d", complexity)
@@ -166,7 +166,7 @@ func TestCalcComplexity_LogicalOr(t *testing.T) {
 func withOr(x, y bool) bool {
 	return x || y
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
 		t.Errorf("expected complexity 2 (1 base + 1 ||), got %d", complexity)
@@ -178,7 +178,7 @@ func TestCalcComplexity_MultipleLogicalOperators(t *testing.T) {
 func complex(a, b, c, d bool) bool {
 	return (a && b) || (c && d)
 }`
-	
+
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 4 {
 		t.Errorf("expected complexity 4 (1 base + 3 logical ops), got %d", complexity)
@@ -209,7 +209,7 @@ func veryComplex(x int, items []string) int {
 	
 	return 0
 }`
-	
+
 	// 1 base + 1 if + 1 for + 1 if + 1 range + 2 cases = 7
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 7 {
@@ -229,7 +229,7 @@ func withClosure(x int) {
 		fn()
 	}
 }`
-	
+
 	// Should only count outer if, not the if inside the closure
 	complexity := parseAndCalcComplexity(t, src)
 	if complexity != 2 {
@@ -250,13 +250,13 @@ func withIf(x int) {
 	}
 }
 `
-	
+
 	results := parseAndAnalyzeComplexity(t, src, "test.go")
-	
+
 	if len(results) != 2 {
 		t.Fatalf("expected 2 results, got %d", len(results))
 	}
-	
+
 	// Check first function
 	if results[0].Name != "simple" {
 		t.Errorf("expected name 'simple', got '%s'", results[0].Name)
@@ -264,7 +264,7 @@ func withIf(x int) {
 	if results[0].Complexity != 1 {
 		t.Errorf("expected complexity 1, got %d", results[0].Complexity)
 	}
-	
+
 	// Check second function
 	if results[1].Name != "withIf" {
 		t.Errorf("expected name 'withIf', got '%s'", results[1].Name)
@@ -289,18 +289,18 @@ func (c *Counter) IncrementPtr() {
 	c.count++
 }
 `
-	
+
 	results := parseAndAnalyzeComplexity(t, src, "test.go")
-	
+
 	if len(results) != 2 {
 		t.Fatalf("expected 2 results, got %d", len(results))
 	}
-	
+
 	// Check value receiver
 	if results[0].Name != "Counter.Increment" {
 		t.Errorf("expected name 'Counter.Increment', got '%s'", results[0].Name)
 	}
-	
+
 	// Check pointer receiver
 	if results[1].Name != "Counter.IncrementPtr" {
 		t.Errorf("expected name 'Counter.IncrementPtr', got '%s'", results[1].Name)
@@ -318,13 +318,13 @@ func (c Container[T]) Get() T {
 	return c.value
 }
 `
-	
+
 	results := parseAndAnalyzeComplexity(t, src, "test.go")
-	
+
 	if len(results) != 1 {
 		t.Fatalf("expected 1 result, got %d", len(results))
 	}
-	
+
 	// Check generic receiver - should extract base type name
 	if results[0].Name != "Container.Get" {
 		t.Errorf("expected name 'Container.Get', got '%s'", results[0].Name)
@@ -335,13 +335,13 @@ func TestReceiverName_Ident(t *testing.T) {
 	src := `package main
 type Foo struct{}
 func (f Foo) Bar() {}`
-	
+
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "test.go", src, 0)
 	if err != nil {
 		t.Fatalf("failed to parse: %v", err)
 	}
-	
+
 	var receiverExpr ast.Expr
 	ast.Inspect(file, func(n ast.Node) bool {
 		if fn, ok := n.(*ast.FuncDecl); ok && fn.Recv != nil {
@@ -350,11 +350,11 @@ func (f Foo) Bar() {}`
 		}
 		return true
 	})
-	
+
 	if receiverExpr == nil {
 		t.Fatal("no receiver found")
 	}
-	
+
 	name := receiverName(receiverExpr)
 	if name != "Foo" {
 		t.Errorf("expected 'Foo', got '%s'", name)
@@ -365,13 +365,13 @@ func TestReceiverName_StarExpr(t *testing.T) {
 	src := `package main
 type Foo struct{}
 func (f *Foo) Bar() {}`
-	
+
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "test.go", src, 0)
 	if err != nil {
 		t.Fatalf("failed to parse: %v", err)
 	}
-	
+
 	var receiverExpr ast.Expr
 	ast.Inspect(file, func(n ast.Node) bool {
 		if fn, ok := n.(*ast.FuncDecl); ok && fn.Recv != nil {
@@ -380,11 +380,11 @@ func (f *Foo) Bar() {}`
 		}
 		return true
 	})
-	
+
 	if receiverExpr == nil {
 		t.Fatal("no receiver found")
 	}
-	
+
 	name := receiverName(receiverExpr)
 	if name != "Foo" {
 		t.Errorf("expected 'Foo', got '%s'", name)
@@ -394,13 +394,13 @@ func (f *Foo) Bar() {}`
 // Helper function to parse source and calculate complexity
 func parseAndCalcComplexity(t *testing.T, src string) int {
 	t.Helper()
-	
+
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "test.go", src, 0)
 	if err != nil {
 		t.Fatalf("failed to parse: %v", err)
 	}
-	
+
 	var body *ast.BlockStmt
 	ast.Inspect(file, func(n ast.Node) bool {
 		if fn, ok := n.(*ast.FuncDecl); ok {
@@ -409,23 +409,23 @@ func parseAndCalcComplexity(t *testing.T, src string) int {
 		}
 		return true
 	})
-	
+
 	if body == nil {
 		t.Fatal("no function body found")
 	}
-	
+
 	return calcComplexity(body)
 }
 
 // Helper function to parse source and analyze complexity
 func parseAndAnalyzeComplexity(t *testing.T, src, path string) []FunctionComplexity {
 	t.Helper()
-	
+
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, path, src, 0)
 	if err != nil {
 		t.Fatalf("failed to parse: %v", err)
 	}
-	
+
 	return analyzeComplexity(fset, file, path)
 }
