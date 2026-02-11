@@ -136,16 +136,16 @@ This agent works with GitHub Copilot CLI. To use it:
 
 ```bash
 # Ask for code health analysis
-gh copilot --agent drift-dev "analyze internal/tui/app.go"
+copilot --agent drift-dev "analyze internal/tui/app.go"
 
 # Get refactoring suggestions
-gh copilot --agent drift-dev "suggest refactoring for the Update() method in app.go"
+copilot --agent drift-dev "suggest refactoring for the Update() method in app.go"
 
 # Explain a metric
-gh copilot --agent drift-dev "explain how complexity is calculated"
+copilot --agent drift-dev "explain how complexity is calculated"
 
 # Get help adding a new language
-gh copilot --agent drift-dev "help me add C# analyzer support"
+copilot --agent drift-dev "help me add C# analyzer support"
 ```
 
 ## Example Workflows
@@ -154,38 +154,38 @@ gh copilot --agent drift-dev "help me add C# analyzer support"
 
 ```bash
 # Check a file's health
-gh copilot --agent drift-dev "@drift analyze internal/analyzer/complexity.go"
+copilot --agent drift-dev "@drift analyze internal/analyzer/complexity.go"
 
 # Get specific metrics
-gh copilot --agent drift-dev "what's the complexity of the calcComplexity function?"
+copilot --agent drift-dev "what's the complexity of the calcComplexity function?"
 
 # Compare two versions
-gh copilot --agent drift-dev "@drift compare HEAD~5 HEAD"
+copilot --agent drift-dev "@drift compare HEAD~5 HEAD"
 ```
 
 ### Getting Refactoring Help
 
 ```bash
 # Complex function
-gh copilot --agent drift-dev "@drift suggest-refactor model.Update() in app.go:126"
+copilot --agent drift-dev "@drift suggest-refactor model.Update() in app.go:126"
 
 # General improvements
-gh copilot --agent drift-dev "how can I improve the health score of internal/tui/app.go?"
+copilot --agent drift-dev "how can I improve the health score of internal/tui/app.go?"
 
 # Fix specific issue
-gh copilot --agent drift-dev "@drift fix-complexity app.go:126"
+copilot --agent drift-dev "@drift fix-complexity app.go:126"
 ```
 
 ### Learning Best Practices
 
 ```bash
 # Language-specific tips
-gh copilot --agent drift-dev "@drift best-practices go"
+copilot --agent drift-dev "@drift best-practices go"
 
 # Thresholds
-gh copilot --agent drift-dev "@drift threshold-recommendations"
+copilot --agent drift-dev "@drift threshold-recommendations"
 
 # Understand metrics
-gh copilot --agent drift-dev "@drift explain dead-code"
+copilot --agent drift-dev "@drift explain dead-code"
 ```
 

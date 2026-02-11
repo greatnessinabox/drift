@@ -249,6 +249,35 @@ html {
   transform: translateY(-1px);
 }
 
+/* ── Copy button on code blocks ── */
+.copy-code-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+pre:hover .copy-code-btn,
+.copy-code-btn:focus {
+  opacity: 1;
+}
+
+/* ── TOC active link ── */
+.toc-link.active {
+  color: var(--color-green);
+  position: relative;
+}
+
+.toc-link.active::before {
+  content: '';
+  position: absolute;
+  left: -17px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 16px;
+  background: var(--color-green);
+  border-radius: 1px;
+}
+
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .scan-line,

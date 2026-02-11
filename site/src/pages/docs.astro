@@ -1,56 +1,84 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import Nav from '../components/Nav.astro'
+import Footer from '../components/Footer.astro'
+import CopyButton from '../components/CopyButton.astro'
 ---
 
 <Layout
   title="Documentation — drift"
   description="Installation, configuration, CLI reference, and usage guide for drift — the real-time codebase health dashboard."
 >
-  <!-- Nav -->
-  <nav class="fixed top-5 left-5 right-5 z-50 border border-border/40 bg-bg/60 backdrop-blur-2xl rounded-2xl">
-    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-      <a href="/" class="font-mono font-bold text-base text-green flex items-center gap-2.5 cursor-pointer group">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-green transition-transform duration-300 group-hover:scale-110">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        drift
-      </a>
-      <div class="flex items-center gap-3">
-        <a href="/docs" class="text-green text-sm font-medium cursor-pointer">Docs</a>
-        <a href="https://github.com/greatnessinabox/drift" class="text-text-muted hover:text-text transition-colors cursor-pointer p-2 rounded-lg hover:bg-surface" aria-label="View drift on GitHub">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        </a>
-      </div>
-    </div>
-  </nav>
+  <Nav activePage="docs" />
+
+  <!-- Subtle EKG grid background -->
+  <div class="fixed inset-0 ekg-grid opacity-30 pointer-events-none -z-10" aria-hidden="true"></div>
+  <div class="fixed inset-0 bg-gradient-to-b from-bg via-bg/95 to-bg pointer-events-none -z-10" aria-hidden="true"></div>
 
   <main class="pt-32 pb-24 px-6">
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-6xl mx-auto">
 
       <!-- Header -->
-      <div class="mb-16">
+      <div class="mb-16 max-w-3xl">
+        <div class="flex items-center gap-2 text-text-muted text-xs font-mono mb-6">
+          <a href="/" class="hover:text-green transition-colors cursor-pointer">drift</a>
+          <span>/</span>
+          <span class="text-text">docs</span>
+        </div>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Documentation</h1>
         <p class="text-text-muted text-lg leading-relaxed">Everything you need to install, configure, and use drift.</p>
       </div>
 
-      <!-- Table of contents -->
-      <nav class="mb-16 bg-surface border border-border rounded-2xl p-6" aria-label="Table of contents">
-        <p class="text-[11px] font-mono uppercase tracking-widest text-text-muted mb-4">On this page</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#install" class="text-text-muted hover:text-green transition-colors cursor-pointer">Installation</a></li>
-          <li><a href="#quick-start" class="text-text-muted hover:text-green transition-colors cursor-pointer">Quick Start</a></li>
-          <li><a href="#configuration" class="text-text-muted hover:text-green transition-colors cursor-pointer">Configuration</a></li>
-          <li><a href="#cli-reference" class="text-text-muted hover:text-green transition-colors cursor-pointer">CLI Reference</a></li>
-          <li><a href="#health-metrics" class="text-text-muted hover:text-green transition-colors cursor-pointer">Health Metrics</a></li>
-          <li><a href="#ai-diagnostics" class="text-text-muted hover:text-green transition-colors cursor-pointer">AI Diagnostics</a></li>
-          <li><a href="#copilot" class="text-text-muted hover:text-green transition-colors cursor-pointer">GitHub Copilot Integration</a></li>
-          <li><a href="#ci-cd" class="text-text-muted hover:text-green transition-colors cursor-pointer">CI/CD</a></li>
-          <li><a href="#keyboard-shortcuts" class="text-text-muted hover:text-green transition-colors cursor-pointer">Keyboard Shortcuts</a></li>
-        </ul>
-      </nav>
+      <div class="flex gap-12">
+        <!-- Sticky sidebar TOC (desktop) -->
+        <nav class="hidden lg:block w-56 shrink-0" aria-label="Table of contents">
+          <div class="sticky top-28">
+            <p class="text-[11px] font-mono uppercase tracking-widest text-text-muted mb-4">On this page</p>
+            <ul class="space-y-1.5 text-sm border-l border-border pl-4" id="toc-list">
+              <li><a href="#install" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="install">Installation</a></li>
+              <li><a href="#quick-start" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="quick-start">Quick Start</a></li>
+              <li><a href="#configuration" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="configuration">Configuration</a></li>
+              <li><a href="#cli-reference" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="cli-reference">CLI Reference</a></li>
+              <li><a href="#health-metrics" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="health-metrics">Health Metrics</a></li>
+              <li><a href="#ai-diagnostics" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="ai-diagnostics">AI Diagnostics</a></li>
+              <li><a href="#copilot" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="copilot">Copilot Integration</a></li>
+              <li><a href="#ci-cd" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="ci-cd">CI/CD</a></li>
+              <li><a href="#keyboard-shortcuts" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="keyboard-shortcuts">Keyboard Shortcuts</a></li>
+              <li><a href="#compatibility" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="compatibility">Compatibility</a></li>
+              <li><a href="#faq" class="toc-link block py-1 text-text-muted hover:text-green transition-colors cursor-pointer" data-section="faq">FAQ</a></li>
+            </ul>
+            <div class="mt-6 pt-4 border-t border-border">
+              <a href="#" class="text-text-muted hover:text-green text-xs font-mono transition-colors cursor-pointer flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Back to top
+              </a>
+            </div>
+          </div>
+        </nav>
 
-      <!-- Content -->
-      <div class="space-y-20">
+        <!-- Mobile TOC (collapsible) -->
+        <details class="lg:hidden mb-10 bg-surface border border-border rounded-2xl w-full">
+          <summary class="px-5 py-3.5 text-sm font-medium cursor-pointer text-text-muted hover:text-text transition-colors flex items-center justify-between">
+            <span class="font-mono text-[11px] uppercase tracking-widest">On this page</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <ul class="space-y-1 text-sm px-5 pb-4">
+            <li><a href="#install" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Installation</a></li>
+            <li><a href="#quick-start" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Quick Start</a></li>
+            <li><a href="#configuration" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Configuration</a></li>
+            <li><a href="#cli-reference" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">CLI Reference</a></li>
+            <li><a href="#health-metrics" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Health Metrics</a></li>
+            <li><a href="#ai-diagnostics" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">AI Diagnostics</a></li>
+            <li><a href="#copilot" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Copilot Integration</a></li>
+            <li><a href="#ci-cd" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">CI/CD</a></li>
+            <li><a href="#keyboard-shortcuts" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Keyboard Shortcuts</a></li>
+            <li><a href="#compatibility" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">Compatibility</a></li>
+            <li><a href="#faq" class="block py-1.5 text-text-muted hover:text-green transition-colors cursor-pointer">FAQ</a></li>
+          </ul>
+        </details>
+
+        <!-- Content -->
+        <div class="space-y-20 min-w-0 flex-1 max-w-3xl">
 
         <!-- Install -->
         <section id="install">
@@ -69,9 +97,13 @@ import Layout from '../layouts/Layout.astro'
           <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> go install github.com/greatnessinabox/drift/cmd/drift@latest</code></pre>
 
           <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Build from source</h3>
-          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-green">$</span> git clone https://github.com/greatnessinabox/drift.git
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> git clone https://github.com/greatnessinabox/drift.git
 <span class="text-green">$</span> cd drift
 <span class="text-green">$</span> go build ./cmd/drift/</code></pre>
+
+          <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Verify it works</h3>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto"><code><span class="text-green">$</span> drift --version
+<span class="text-text-muted">drift v1.0.0</span></code></pre>
         </section>
 
         <!-- Quick Start -->
@@ -155,8 +187,8 @@ import Layout from '../layouts/Layout.astro'
 
           <div class="space-y-4">
             {[
-              { cmd: 'drift', desc: 'Launch the interactive TUI dashboard. Auto-detects language and starts real-time monitoring.' },
-              { cmd: 'drift watch', desc: 'Same as drift — watch mode is the default. Re-analyzes as files change.' },
+              { cmd: 'drift', desc: 'Launch the interactive TUI dashboard. Auto-detects language and starts real-time monitoring with file watching.' },
+              { cmd: 'drift init', desc: 'Initialize a .drift.yaml config file in the current directory with sensible defaults.' },
               { cmd: 'drift report', desc: 'Generate a one-shot health report to stdout. Useful for quick checks.' },
               { cmd: 'drift check --fail-under <score>', desc: 'Exit with code 1 if health score is below the threshold. Designed for CI pipelines.' },
               { cmd: 'drift fix', desc: 'Interactive mode — finds issues, asks GitHub Copilot for fixes, and lets you apply them one by one.' },
@@ -250,12 +282,12 @@ import Layout from '../layouts/Layout.astro'
   <span class="text-green">Apply this suggestion? [y/N/s(kip rest)]</span></code></pre>
 
           <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Custom agent</h3>
-          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"analyze internal/tui/app.go"</span>
-<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"suggest refactoring for Update()"</span>
-<span class="text-green">$</span> gh copilot --agent drift-dev <span class="text-text">"help me add C# analyzer support"</span></code></pre>
+          <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> copilot --agent drift-dev <span class="text-text">"analyze internal/tui/app.go"</span>
+<span class="text-green">$</span> copilot --agent drift-dev <span class="text-text">"suggest refactoring for Update()"</span>
+<span class="text-green">$</span> copilot --agent drift-dev <span class="text-text">"help me add C# analyzer support"</span></code></pre>
 
           <p class="text-text-muted text-sm leading-relaxed">
-            Requires <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">gh extension install github/gh-copilot</code>. drift also works with any AI coding assistant &mdash; see the <a href="https://github.com/greatnessinabox/drift/blob/main/.github/AI_AGENTS.md" class="text-green hover:underline">multi-agent guide</a>.
+            Requires <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">brew install copilot-cli</code>. drift also works with any AI coding assistant &mdash; see the <a href="https://github.com/greatnessinabox/drift/blob/main/.github/AI_AGENTS.md" class="text-green hover:underline">multi-agent guide</a>.
           </p>
         </section>
 
@@ -322,23 +354,138 @@ import Layout from '../layouts/Layout.astro'
           </div>
         </section>
 
+        <!-- Compatibility -->
+        <section id="compatibility">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">10</span>
+            Compatibility
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="bg-surface border border-border rounded-xl p-5">
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4" stroke-linecap="round"/></svg>
+                Operating Systems
+              </h3>
+              <ul class="space-y-1.5 text-sm text-text-muted">
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> macOS (arm64, amd64)</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Linux (arm64, amd64)</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Windows (amd64, arm64)</li>
+              </ul>
+            </div>
+
+            <div class="bg-surface border border-border rounded-xl p-5">
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple"><polyline points="4 17 10 11 4 5" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke-linecap="round"/></svg>
+                Shells
+              </h3>
+              <ul class="space-y-1.5 text-sm text-text-muted">
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> bash / zsh</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> fish / nushell</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> PowerShell / cmd</li>
+              </ul>
+            </div>
+
+            <div class="bg-surface border border-border rounded-xl p-5">
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-yellow"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Languages
+              </h3>
+              <ul class="space-y-1.5 text-sm text-text-muted">
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Go 1.21+</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> TypeScript / JavaScript</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Python, Rust, Java</li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="text-text-muted text-sm leading-relaxed">
+            drift is a single static binary with <strong class="text-text">zero runtime dependencies</strong>. No Node.js, no Python runtime, no Docker. Just download and run.
+          </p>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <span class="text-green font-mono text-base">11</span>
+            FAQ &amp; Troubleshooting
+          </h2>
+
+          <div class="space-y-4">
+            {[
+              {
+                q: 'drift says "no supported project found"',
+                a: 'drift looks for manifest files (go.mod, package.json, Cargo.toml, pyproject.toml, pom.xml) in the current directory. Make sure you\'re running drift from the project root, or set the language explicitly in .drift.yaml.',
+              },
+              {
+                q: 'AI diagnosis says "no API key configured"',
+                a: 'Set ANTHROPIC_API_KEY or OPENAI_API_KEY as an environment variable, or configure the provider in .drift.yaml under the ai section.',
+              },
+              {
+                q: 'The health score seems too low',
+                a: 'Scores are based on five weighted metrics. Run drift report to see which dimension is dragging your score down. You can adjust weights in .drift.yaml to match your team\'s priorities.',
+              },
+              {
+                q: 'Can I use drift in a monorepo?',
+                a: 'Yes — run drift from any subdirectory that has its own manifest file. Each sub-project is analyzed independently.',
+              },
+              {
+                q: 'Does drift send any data externally?',
+                a: 'Only if you enable AI diagnostics (which calls the LLM API you configure). Otherwise, drift is fully offline. No telemetry, no analytics, no phone-home.',
+              },
+              {
+                q: 'How do I update drift?',
+                a: 'Same way you installed it: brew upgrade drift, re-run the shell script, or go install ...@latest. Check the releases page for changelogs.',
+              },
+            ].map(item => (
+              <details class="bg-surface border border-border rounded-xl group">
+                <summary class="px-5 py-4 text-sm font-medium cursor-pointer text-text hover:text-green transition-colors flex items-center justify-between gap-4">
+                  <span>{item.q}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </summary>
+                <div class="px-5 pb-4 text-sm text-text-muted leading-relaxed border-t border-border/30 pt-3">
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+      </div>
       </div>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="py-12 px-6 border-t border-border/20">
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-      <div class="flex items-center gap-2.5 font-mono text-sm text-text-muted">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-green">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="text-green">drift</span> by <a href="https://github.com/greatnessinabox" class="text-text hover:text-green transition-colors cursor-pointer">Marquis Nobles</a>
-      </div>
-      <div class="flex items-center gap-8 text-sm text-text-muted">
-        <a href="https://github.com/greatnessinabox/drift" class="hover:text-text transition-colors cursor-pointer">GitHub</a>
-        <a href="https://github.com/greatnessinabox/drift/blob/main/LICENSE" class="hover:text-text transition-colors cursor-pointer">MIT License</a>
-      </div>
-    </div>
-  </footer>
+  <Footer />
+
+  <!-- Copy-to-clipboard for all code blocks -->
+  <CopyButton />
+
+  <!-- Scroll spy for TOC active state -->
+  <script>
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = Array.from(tocLinks).map(link => {
+      const id = link.getAttribute('data-section');
+      return id ? document.getElementById(id) : null;
+    }).filter(Boolean);
+
+    function updateActiveLink() {
+      const scrollY = window.scrollY + 160;
+
+      let activeId = '';
+      for (const section of sections) {
+        if (section.offsetTop <= scrollY) {
+          activeId = section.id;
+        }
+      }
+
+      tocLinks.forEach(link => {
+        const isActive = link.getAttribute('data-section') === activeId;
+        link.classList.toggle('active', isActive);
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveLink, { passive: true });
+    updateActiveLink();
+  </script>
 </Layout>

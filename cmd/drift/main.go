@@ -181,8 +181,10 @@ func newFixCmd() *cobra.Command {
 		Long: `Fix analyzes your codebase and uses GitHub Copilot CLI to suggest improvements
 for code health issues like high complexity, outdated dependencies, and more.
 
-Requires GitHub Copilot CLI to be installed:
-  gh extension install github/gh-copilot
+Requires GitHub Copilot CLI to be installed (any one of):
+  brew install copilot-cli
+  npm install -g @github/copilot
+  curl -fsSL https://gh.io/copilot-install | bash
 
 Example:
   drift fix                    # Interactive mode
@@ -214,13 +216,15 @@ Example:
 }
 
 func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Results, interactive bool, limit int) error {
-	// Check if gh copilot is available
-	if !isGHCopilotAvailable() {
+	// Check if copilot CLI is available
+	if !isCopilotAvailable() {
 		fmt.Println("❌ GitHub Copilot CLI not found")
-		fmt.Println("\nInstall it with:")
-		fmt.Println("  gh extension install github/gh-copilot")
+		fmt.Println("\nInstall it with one of:")
+		fmt.Println("  brew install copilot-cli")
+		fmt.Println("  npm install -g @github/copilot")
+		fmt.Println("  curl -fsSL https://gh.io/copilot-install | bash")
 		fmt.Println("\nAlternatively, run 'drift report' for analysis without AI suggestions")
-		return fmt.Errorf("gh copilot not available")
+		return fmt.Errorf("copilot CLI not available")
 	}
 
 	fmt.Printf("🔍 Analyzing codebase... (Score: %.1f/100)\n\n", score.Total)
@@ -323,38 +327,42 @@ func getSeverity(complexity, threshold int) string {
 	return "🟢 LOW"
 }
 
-func isGHCopilotAvailable() bool {
-	cmd := exec.Command("gh", "copilot", "--version")
-	err := cmd.Run()
+func isCopilotAvailable() bool {
+	_, err := exec.LookPath("copilot")
 	return err == nil
 }
 
 func getCopilotSuggestion(cfg *config.Config, issue fixIssue) (string, error) {
-	// Build prompt for Copilot
 	prompt := buildCopilotPrompt(cfg, issue)
 
-	// Call gh copilot suggest
-	cmd := exec.Command("gh", "copilot", "suggest", prompt)
+	// Use copilot CLI in non-interactive mode with silent output
+	cmd := exec.Command("copilot",
+		"-p", prompt,
+		"-s",
+		"--add-dir", cfg.Root,
+		"--no-auto-update",
+	)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("gh copilot failed: %w", err)
+		return "", fmt.Errorf("copilot CLI failed: %w\n%s", err, string(output))
 	}
 
-	return string(output), nil
+	return strings.TrimSpace(string(output)), nil
 }
 
 func buildCopilotPrompt(cfg *config.Config, issue fixIssue) string {
-	// Read the function source code
 	filePath := filepath.Join(cfg.Root, issue.File)
-	sourceCode := readFunctionSource(filePath, issue.Line, 20)
+	sourceCode := readFunctionSource(filePath, issue.Line, 30)
 
-	prompt := fmt.Sprintf(`Refactor this Go function to reduce cyclomatic complexity from %d to below %d.
+	prompt := fmt.Sprintf(`Refactor the function %s() in %s (starting at line %d) to reduce its cyclomatic complexity from %d to below %d.
 Focus on extracting methods, simplifying conditionals, and improving readability.
+Do NOT modify files — only show the refactored code with a brief explanation.
 
 Current code:
-%s
-
-Provide a refactored version with explanation.`,
+%s`,
+		issue.Function,
+		issue.File,
+		issue.Line,
 		extractComplexity(issue.Description),
 		cfg.Thresholds.MaxComplexity,
 		sourceCode)

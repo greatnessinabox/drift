@@ -24,8 +24,8 @@ drift works seamlessly with popular AI coding assistants. While built for the **
 # Interactive fixing
 drift fix
 
-# Custom agent (if gh copilot extension installed)
-# Custom agents work through IDE/GitHub interface
+# Custom agent (requires Copilot CLI: brew install copilot-cli)
+copilot --agent drift-dev "analyze src/"
 ```
 
 **Pricing:** Free tier, Pro ($10/mo), Business/Enterprise  

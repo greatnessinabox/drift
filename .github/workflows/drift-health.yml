@@ -58,13 +58,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Create a summary with Copilot (if available)
-          if command -v gh &> /dev/null && gh copilot --version &> /dev/null; then
-            echo "🤖 Using GitHub Copilot to generate summary..."
-            
+          # Create a summary with Copilot CLI (if available)
+          if command -v copilot &> /dev/null; then
+            echo "🤖 Using GitHub Copilot CLI to generate summary..."
+
             REPORT=$(cat drift-report.txt | head -50)
-            
-            gh copilot suggest "Create a friendly PR comment summarizing this code health report. Include the score, top issues, and encouraging tone: $REPORT" > copilot-summary.txt 2>&1 || echo "Code Health Report\n\n$(cat drift-report.txt)" > copilot-summary.txt
+
+            copilot -p "Create a friendly PR comment summarizing this code health report. Include the score, top issues, and encouraging tone: $REPORT" -s --no-auto-update > copilot-summary.txt 2>&1 || echo "Code Health Report\n\n$(cat drift-report.txt)" > copilot-summary.txt
           else
             echo "Code Health Report\n\n$(cat drift-report.txt)" > copilot-summary.txt
           fi

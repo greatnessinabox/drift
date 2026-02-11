@@ -94,7 +94,7 @@ drift check --fail-under 70
 drift fix
 
 # Use custom agent commands
-gh copilot --agent drift-dev "@drift analyze src/"
+copilot --agent drift-dev "analyze src/"
 ```
 
 ## 🤖 GitHub Copilot CLI Integration
@@ -124,7 +124,9 @@ Apply this suggestion? [y/N/s(kip rest)] y
 
 **Requirements:**
 ```bash
-gh extension install github/gh-copilot
+brew install copilot-cli
+# or: npm install -g @github/copilot
+# or: curl -fsSL https://gh.io/copilot-install | bash
 ```
 
 ### Custom Agent
@@ -132,9 +134,9 @@ gh extension install github/gh-copilot
 Use `@drift` commands in Copilot CLI:
 
 ```bash
-gh copilot --agent drift-dev "@drift analyze internal/analyzer/"
-gh copilot --agent drift-dev "@drift suggest-refactor complexFunction()"
-gh copilot --agent drift-dev "@drift explain complexity"
+copilot --agent drift-dev "analyze internal/analyzer/"
+copilot --agent drift-dev "suggest-refactor complexFunction()"
+copilot --agent drift-dev "explain complexity"
 ```
 
 See [`.github/agents/drift-dev.agent.md`](.github/agents/drift-dev.agent.md) for all commands.
