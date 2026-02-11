@@ -1,0 +1,43 @@
+# drift configuration
+# https://github.com/greatnessinabox/drift
+
+# Project root (defaults to current directory)
+root: "."
+
+# Directories to exclude from analysis
+exclude:
+  - vendor
+  - node_modules
+  - .git
+  - testdata
+
+# Metric weights (must sum to 1.0)
+weights:
+  complexity: 0.30
+  deps: 0.20
+  boundaries: 0.20
+  dead_code: 0.15
+  coverage: 0.15
+
+# Architecture boundary rules
+# Format: "from_path -> to_path"
+# Violations occur when code in from_path imports packages matching to_path
+boundaries:
+  - deny: "cmd -> internal/tui"
+  - deny: "pkg/api -> internal/db"
+
+# AI diagnostics configuration
+ai:
+  # Provider: "anthropic" or "openai"
+  provider: anthropic
+  # Model to use (defaults to claude-sonnet-4-5-20250929 for anthropic, gpt-4o for openai)
+  model: ""
+
+# Severity thresholds
+thresholds:
+  # Maximum acceptable cyclomatic complexity per function
+  max_complexity: 15
+  # Number of days before a dependency is considered stale
+  max_stale_days: 90
+  # Minimum acceptable health score (for CI mode)
+  min_score: 70
