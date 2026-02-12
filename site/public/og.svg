@@ -54,20 +54,29 @@
 
   <!-- Language badges -->
   <g transform="translate(100, 420)">
-    <rect x="0" y="0" width="52" height="30" rx="8" fill="rgba(0,173,216,0.15)" stroke="rgba(0,173,216,0.3)" stroke-width="1"/>
-    <text x="26" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#00ADD8">Go</text>
+    <rect x="0" y="0" width="46" height="28" rx="7" fill="rgba(0,173,216,0.15)" stroke="rgba(0,173,216,0.3)" stroke-width="1"/>
+    <text x="23" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#00ADD8">Go</text>
 
-    <rect x="66" y="0" width="52" height="30" rx="8" fill="rgba(49,120,198,0.15)" stroke="rgba(49,120,198,0.3)" stroke-width="1"/>
-    <text x="92" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#3178C6">TS</text>
+    <rect x="56" y="0" width="46" height="28" rx="7" fill="rgba(49,120,198,0.15)" stroke="rgba(49,120,198,0.3)" stroke-width="1"/>
+    <text x="79" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#3178C6">TS</text>
 
-    <rect x="132" y="0" width="52" height="30" rx="8" fill="rgba(255,212,59,0.15)" stroke="rgba(255,212,59,0.3)" stroke-width="1"/>
-    <text x="158" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#FFD43B">Py</text>
+    <rect x="112" y="0" width="46" height="28" rx="7" fill="rgba(255,212,59,0.15)" stroke="rgba(255,212,59,0.3)" stroke-width="1"/>
+    <text x="135" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#FFD43B">Py</text>
 
-    <rect x="198" y="0" width="52" height="30" rx="8" fill="rgba(255,92,92,0.15)" stroke="rgba(255,92,92,0.3)" stroke-width="1"/>
-    <text x="224" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#FF5C5C">Rs</text>
+    <rect x="168" y="0" width="46" height="28" rx="7" fill="rgba(255,92,92,0.15)" stroke="rgba(255,92,92,0.3)" stroke-width="1"/>
+    <text x="191" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#FF5C5C">Rs</text>
 
-    <rect x="264" y="0" width="52" height="30" rx="8" fill="rgba(248,152,32,0.15)" stroke="rgba(248,152,32,0.3)" stroke-width="1"/>
-    <text x="290" y="20" text-anchor="middle" font-family="monospace" font-weight="700" font-size="13" fill="#F89820">Jv</text>
+    <rect x="224" y="0" width="46" height="28" rx="7" fill="rgba(248,152,32,0.15)" stroke="rgba(248,152,32,0.3)" stroke-width="1"/>
+    <text x="247" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#F89820">Jv</text>
+
+    <rect x="280" y="0" width="46" height="28" rx="7" fill="rgba(204,52,45,0.15)" stroke="rgba(204,52,45,0.3)" stroke-width="1"/>
+    <text x="303" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#CC342D">Rb</text>
+
+    <rect x="336" y="0" width="52" height="28" rx="7" fill="rgba(119,123,180,0.15)" stroke="rgba(119,123,180,0.3)" stroke-width="1"/>
+    <text x="362" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#777BB4">PHP</text>
+
+    <rect x="398" y="0" width="46" height="28" rx="7" fill="rgba(104,33,122,0.15)" stroke="rgba(104,33,122,0.3)" stroke-width="1"/>
+    <text x="421" y="19" text-anchor="middle" font-family="monospace" font-weight="700" font-size="12" fill="#68217A">C#</text>
   </g>
 
   <!-- URL -->

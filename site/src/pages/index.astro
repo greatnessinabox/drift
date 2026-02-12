@@ -7,7 +7,7 @@ import CopyButton from '../components/CopyButton.astro'
 
 <Layout
   title="drift — Real-time codebase health dashboard"
-  description="Monitor code complexity, dependency freshness, architecture boundaries, and dead code in real-time. Supports Go, TypeScript, Python, Rust, and Java."
+  description="Monitor code complexity, dependency freshness, architecture boundaries, and dead code in real-time. Supports Go, TypeScript, Python, Rust, Java, Ruby, PHP, and C#."
 >
   <!-- Scan line on load -->
   <div class="scan-line" aria-hidden="true"></div>
@@ -203,13 +203,16 @@ import CopyButton from '../components/CopyButton.astro'
         <div class="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-border"></div>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 stagger">
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-3 stagger">
         {[
           { name: 'Go', file: 'go.mod', color: '#00ADD8', symbol: 'Go' },
           { name: 'TypeScript', file: 'package.json', color: '#3178C6', symbol: 'TS' },
           { name: 'Python', file: 'pyproject.toml', color: '#FFD43B', symbol: 'Py' },
           { name: 'Rust', file: 'Cargo.toml', color: '#FF5C5C', symbol: 'Rs' },
           { name: 'Java', file: 'pom.xml', color: '#F89820', symbol: 'Jv' },
+          { name: 'Ruby', file: 'Gemfile', color: '#CC342D', symbol: 'Rb' },
+          { name: 'PHP', file: 'composer.json', color: '#777BB4', symbol: 'PHP' },
+          { name: 'C#', file: '*.csproj', color: '#68217A', symbol: 'C#' },
         ].map(lang => (
           <div class="reveal-scale group cursor-default rounded-2xl border border-border bg-surface/50 p-5 text-center transition-all hover:border-border/80 hover:bg-surface" style={`--accent: ${lang.color}`}>
             <div class="w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center font-mono font-bold text-sm" style={`background: ${lang.color}15; color: ${lang.color}; border: 1px solid ${lang.color}20`}>
@@ -311,7 +314,7 @@ import CopyButton from '../components/CopyButton.astro'
                 </div>
                 <h3 class="font-semibold text-lg text-text">Cyclomatic Complexity</h3>
               </div>
-              <p class="text-text-muted text-sm leading-relaxed max-w-md">Full AST analysis for Go, heuristic pattern matching for TypeScript, Python, Rust, and Java.</p>
+              <p class="text-text-muted text-sm leading-relaxed max-w-md">Full AST analysis for Go, heuristic pattern matching for TypeScript, Python, Rust, Java, Ruby, PHP, and C#.</p>
             </div>
             <span class="text-[10px] font-mono text-green bg-green/10 border border-green/10 px-2.5 py-1 rounded-full shrink-0 ml-4 tracking-wider">WEIGHT 30%</span>
           </div>
@@ -351,7 +354,7 @@ import CopyButton from '../components/CopyButton.astro'
             <h3 class="font-semibold text-text">Dependency Freshness</h3>
           </div>
           <span class="text-[10px] font-mono text-cyan bg-cyan/10 border border-cyan/10 px-2.5 py-1 rounded-full inline-block w-fit mb-3 tracking-wider">WEIGHT 20%</span>
-          <p class="text-text-muted text-sm leading-relaxed flex-1">Checks every dep against Go proxy, npm, PyPI, crates.io, and Maven Central.</p>
+          <p class="text-text-muted text-sm leading-relaxed flex-1">Checks every dep against Go proxy, npm, PyPI, crates.io, Maven Central, RubyGems, Packagist, and NuGet.</p>
           <div class="mt-5 flex items-center gap-2 text-xs font-mono text-cyan">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             42/42 up to date

@@ -25,7 +25,7 @@ go test ./...                     # All tests
 
 ## Architecture Overview
 
-drift is a real-time **multi-language** codebase health analyzer with a Bubble Tea TUI. It supports Go, TypeScript/JavaScript, Python, Rust, and Java through a pluggable `LanguageAnalyzer` interface.
+drift is a real-time **multi-language** codebase health analyzer with a Bubble Tea TUI. It supports Go, TypeScript/JavaScript, Python, Rust, Java, Ruby, PHP, and C# through a pluggable `LanguageAnalyzer` interface.
 
 ### Core Flow
 1. **Language Detection** (`internal/analyzer/language.go`) → Auto-detects from manifest files or reads `language` from config
@@ -50,7 +50,7 @@ type LanguageAnalyzer interface {
 }
 ```
 
-Implementations: `GoAnalyzer`, `TypeScriptAnalyzer`, `PythonAnalyzer`, `RustAnalyzer`, `JavaAnalyzer`
+Implementations: `GoAnalyzer`, `TypeScriptAnalyzer`, `PythonAnalyzer`, `RustAnalyzer`, `JavaAnalyzer`, `RubyAnalyzer`, `PHPAnalyzer`, `CSharpAnalyzer`
 
 ### Key Components
 
@@ -63,6 +63,9 @@ Implementations: `GoAnalyzer`, `TypeScriptAnalyzer`, `PythonAnalyzer`, `RustAnal
 - `python_analyzer.go`: Python via indentation-aware regex + PyPI
 - `rust_analyzer.go`: Rust via regex + crates.io
 - `java_analyzer.go`: Java via regex + Maven Central
+- `ruby_analyzer.go`: Ruby via def/end tracking + RubyGems
+- `php_analyzer.go`: PHP via regex + Packagist
+- `csharp_analyzer.go`: C# via regex + NuGet (.csproj XML parsing)
 
 **`internal/health/`** — Scoring system
 - `score.go`: Weighted scoring model (complexity 30%, deps 20%, boundaries 20%, dead code 15%, coverage 15%)
@@ -106,7 +109,7 @@ Implementations: `GoAnalyzer`, `TypeScriptAnalyzer`, `PythonAnalyzer`, `RustAnal
 
 ### Configuration
 - Config lives in `.drift.yaml` at project root
-- `language` field: empty = auto-detect, or set explicitly ("go", "typescript", "python", "rust", "java")
+- `language` field: empty = auto-detect, or set explicitly ("go", "typescript", "python", "rust", "java", "ruby", "php", "csharp")
 - Always provide sensible defaults in `config.Defaults()`
 - Weights must sum to 1.0
 

@@ -1,6 +1,6 @@
 ---
 name: codebase-health-analysis
-description: "Analyze codebase health across Go, TypeScript/JS, Python, Rust, and Java — including cyclomatic complexity, dependency freshness, dead code detection, and architectural boundary violations. Use this skill when asked about code quality, tech debt, code health, complexity analysis, or dependency management."
+description: "Analyze codebase health across Go, TypeScript/JS, Python, Rust, Java, Ruby, PHP, and C# — including cyclomatic complexity, dependency freshness, dead code detection, and architectural boundary violations. Use this skill when asked about code quality, tech debt, code health, complexity analysis, or dependency management."
 ---
 
 # Codebase Health Analysis
@@ -15,6 +15,9 @@ Check for manifest files in this order:
 3. `pyproject.toml` or `requirements.txt` → Python (indentation-aware heuristic)
 4. `Cargo.toml` → Rust (heuristic regex)
 5. `pom.xml` or `build.gradle` → Java (heuristic regex)
+6. `Gemfile` → Ruby (def/end tracking heuristic)
+7. `composer.json` → PHP (heuristic regex)
+8. `*.csproj` → C# (heuristic regex)
 
 ## 1. Cyclomatic Complexity Analysis
 
@@ -45,6 +48,19 @@ Calculate cyclomatic complexity for each function by counting decision points:
 - +1 for: `if(`, `else if`, `for(`, `while(`, `do{`, `case X:`, `catch(`
 - +1 for: `&&`, `||`, ternary `? :`
 
+### Ruby (def/end tracking)
+- +1 for: `if`, `elsif`, `unless`, `for`, `while`, `until`, `when`, `rescue`
+- +1 for: `&&`, `||`
+- Function boundaries determined by `def`/`end` keyword depth
+
+### PHP
+- +1 for: `if(`, `elseif(`, `for(`, `foreach(`, `while(`, `do{`, `case X:`, `catch(`
+- +1 for: `&&`, `||`, ternary `? :`
+
+### C#
+- +1 for: `if(`, `else if`, `for(`, `foreach(`, `while(`, `do{`, `case X:`, `catch(`, `switch(`
+- +1 for: `&&`, `||`, `??`, ternary `? :`
+
 **Severity thresholds:**
 - 1-10: Good (green) — easy to understand and test
 - 11-20: Warning (yellow) — consider refactoring
@@ -61,6 +77,9 @@ Check the language-specific manifest against its registry:
 | Python | `requirements.txt` / `pyproject.toml` | `https://pypi.org/pypi/{pkg}/json` |
 | Rust | `Cargo.toml` | `https://crates.io/api/v1/crates/{crate}` |
 | Java | `pom.xml` / `build.gradle` | `https://search.maven.org/solrsearch/select` |
+| Ruby | `Gemfile` | `https://rubygems.org/api/v1/gems/{name}.json` |
+| PHP | `composer.json` | `https://repo.packagist.org/p2/{vendor}/{package}.json` |
+| C# | `*.csproj` | `https://api.nuget.org/v3-flatcontainer/{name}/index.json` |
 
 **Staleness classification:**
 - Current: version matches latest
@@ -77,6 +96,9 @@ Import detection patterns per language:
 - **Python**: `import X`, `from X import`
 - **Rust**: `use`, `pub use`, `extern crate`
 - **Java**: `import` (including static)
+- **Ruby**: `require`, `require_relative`
+- **PHP**: `use`, `require_once`, `include`
+- **C#**: `using`, `using static`
 
 ## 4. Dead Code Detection
 

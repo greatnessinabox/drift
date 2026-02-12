@@ -24,7 +24,7 @@ Type "# drift - Real-time codebase health dashboard"
 Sleep 1s
 Enter
 Sleep 500ms
-Type "# Supports Go, TypeScript, Python, Rust, and Java"
+Type "# Supports Go, TypeScript, Python, Rust, Java, Ruby, PHP, and C#"
 Sleep 2s
 Enter
 Enter

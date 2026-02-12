@@ -24,7 +24,7 @@ go test -race ./...
 ```
 cmd/drift/          CLI entrypoint
 internal/
-  analyzer/         Language analyzers (Go, TS, Python, Rust, Java)
+  analyzer/         Language analyzers (Go, TS, Python, Rust, Java, Ruby, PHP, C#)
   ai/               AI-powered diagnostics (Anthropic, OpenAI)
   config/           YAML configuration
   health/           Weighted health scoring

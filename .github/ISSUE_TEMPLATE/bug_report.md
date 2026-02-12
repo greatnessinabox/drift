@@ -23,4 +23,4 @@ labels: bug
 - OS:
 - Go version:
 - drift version: (`drift --help` or `go version`)
-- Language analyzed: (Go / TypeScript / Python / Rust / Java)
+- Language analyzed: (Go / TypeScript / Python / Rust / Java / Ruby / PHP / C#)

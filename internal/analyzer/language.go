@@ -15,6 +15,9 @@ const (
 	LangPython     Language = "python"
 	LangRust       Language = "rust"
 	LangJava       Language = "java"
+	LangRuby       Language = "ruby"
+	LangPHP        Language = "php"
+	LangCSharp     Language = "csharp"
 	LangUnknown    Language = "unknown"
 )
 
@@ -40,6 +43,8 @@ func DetectLanguage(root string) Language {
 		{"Cargo.toml", LangRust},
 		{"pom.xml", LangJava},
 		{"build.gradle", LangJava},
+		{"Gemfile", LangRuby},
+		{"composer.json", LangPHP},
 	}
 
 	for _, c := range checks {
@@ -47,6 +52,18 @@ func DetectLanguage(root string) Language {
 			return c.lang
 		}
 	}
+
+	// Check for .csproj files (C# projects)
+	csprojFiles, _ := filepath.Glob(filepath.Join(root, "*.csproj"))
+	if len(csprojFiles) > 0 {
+		return LangCSharp
+	}
+	// Also check one level deep for .NET solutions
+	csprojFiles, _ = filepath.Glob(filepath.Join(root, "*", "*.csproj"))
+	if len(csprojFiles) > 0 {
+		return LangCSharp
+	}
+
 	return LangUnknown
 }
 
@@ -62,6 +79,12 @@ func NewLanguageAnalyzer(lang Language) LanguageAnalyzer {
 		return &RustAnalyzer{}
 	case LangJava:
 		return &JavaAnalyzer{}
+	case LangRuby:
+		return &RubyAnalyzer{}
+	case LangPHP:
+		return &PHPAnalyzer{}
+	case LangCSharp:
+		return &CSharpAnalyzer{}
 	default:
 		return &GoAnalyzer{}
 	}

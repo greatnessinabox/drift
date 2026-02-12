@@ -43,3 +43,4 @@ dist/
 # Site
 node_modules/
 .astro/
+.vercel

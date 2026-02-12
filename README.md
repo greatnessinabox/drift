@@ -12,7 +12,7 @@ drift watches your codebase in real-time, detects code health degradation, and u
 > 🏆 **Built for the [GitHub Copilot CLI Challenge](https://dev.to/challenges/github-2026-01-21)**  
 > drift showcases deep GitHub Copilot CLI integration with interactive fixing, custom agents, and AI-powered PR comments.
 
-Supports **Go**, **TypeScript/JavaScript**, **Python**, **Rust**, and **Java** with automatic language detection.
+Supports **Go**, **TypeScript/JavaScript**, **Python**, **Rust**, **Java**, **Ruby**, **PHP**, and **C#** with automatic language detection.
 
 ![drift demo](demo-quick.gif)
 
@@ -36,11 +36,11 @@ Supports **Go**, **TypeScript/JavaScript**, **Python**, **Rust**, and **Java** w
 ## Features
 
 - **🤖 AI Agent Support** — Works with GitHub Copilot, Claude Code, Cursor, Aider, and more (see [AI_AGENTS.md](.github/AI_AGENTS.md))
-- **🌐 Multi-Language** — Auto-detects Go, TypeScript/JS, Python, Rust, and Java from project manifest files
+- **🌐 Multi-Language** — Auto-detects Go, TypeScript/JS, Python, Rust, Java, Ruby, PHP, and C# from project manifest files
 - **🎨 Live Dashboard** — Full-screen TUI that updates in real-time as you edit code
 - **📈 Sparkline Trends** — Visualize health metrics over the last 10 commits with inline charts
 - **🔧 Cyclomatic Complexity** — Go uses full AST analysis; other languages use heuristic pattern matching
-- **📦 Dependency Freshness** — Checks dependencies against their registry (Go proxy, npm, PyPI, crates.io, Maven Central)
+- **📦 Dependency Freshness** — Checks dependencies against their registry (Go proxy, npm, PyPI, crates.io, Maven Central, RubyGems, Packagist, NuGet)
 - **🏗️ Architecture Boundaries** — Define import rules and catch violations instantly
 - **☠️ Dead Code Detection** — Finds exported functions with zero callers
 - **💬 AI Diagnostics** — Press `d` to get AI-powered analysis via Claude or GPT-4o
@@ -56,11 +56,14 @@ Supports **Go**, **TypeScript/JavaScript**, **Python**, **Rust**, and **Java** w
 | Python | `pyproject.toml` / `requirements.txt` | Heuristic + indentation | PyPI |
 | Rust | `Cargo.toml` | Heuristic regex | crates.io |
 | Java | `pom.xml` / `build.gradle` | Heuristic regex | Maven Central |
+| Ruby | `Gemfile` | Heuristic + def/end tracking | RubyGems |
+| PHP | `composer.json` | Heuristic regex | Packagist |
+| C# | `*.csproj` | Heuristic regex | NuGet |
 
 drift auto-detects the language by checking for manifest files. You can also set it explicitly in `.drift.yaml`:
 
 ```yaml
-language: typescript  # or "go", "python", "rust", "java"
+language: typescript  # or "go", "python", "rust", "java", "ruby", "php", "csharp"
 ```
 
 ## Install

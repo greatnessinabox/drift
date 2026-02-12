@@ -127,7 +127,7 @@ import CopyButton from '../components/CopyButton.astro'
 <span class="text-green">$</span> drift fix</code></pre>
 
           <p class="text-text-muted text-sm leading-relaxed">
-            drift auto-detects the language by checking for manifest files (<code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">go.mod</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">package.json</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">Cargo.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pyproject.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pom.xml</code>). Supports <strong class="text-text">Go</strong>, <strong class="text-text">TypeScript/JavaScript</strong>, <strong class="text-text">Python</strong>, <strong class="text-text">Rust</strong>, and <strong class="text-text">Java</strong>.
+            drift auto-detects the language by checking for manifest files (<code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">go.mod</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">package.json</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">Cargo.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pyproject.toml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">pom.xml</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">Gemfile</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">composer.json</code>, <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">*.csproj</code>). Supports <strong class="text-text">Go</strong>, <strong class="text-text">TypeScript/JavaScript</strong>, <strong class="text-text">Python</strong>, <strong class="text-text">Rust</strong>, <strong class="text-text">Java</strong>, <strong class="text-text">Ruby</strong>, <strong class="text-text">PHP</strong>, and <strong class="text-text">C#</strong>.
           </p>
         </section>
 
@@ -215,8 +215,8 @@ import CopyButton from '../components/CopyButton.astro'
 
           <div class="space-y-4">
             {[
-              { name: 'Cyclomatic Complexity', weight: '30%', color: 'green', desc: 'Full AST analysis for Go, heuristic pattern matching for TS, Python, Rust, Java. Finds your most complex functions.' },
-              { name: 'Dependency Freshness', weight: '20%', color: 'cyan', desc: 'Checks every dependency against its registry — Go proxy, npm, PyPI, crates.io, Maven Central.' },
+              { name: 'Cyclomatic Complexity', weight: '30%', color: 'green', desc: 'Full AST analysis for Go, heuristic pattern matching for TS, Python, Rust, Java, Ruby, PHP, and C#. Finds your most complex functions.' },
+              { name: 'Dependency Freshness', weight: '20%', color: 'cyan', desc: 'Checks every dependency against its registry — Go proxy, npm, PyPI, crates.io, Maven Central, RubyGems, Packagist, and NuGet.' },
               { name: 'Architecture Boundaries', weight: '20%', color: 'purple', desc: 'Define import deny rules (e.g., "api cannot import db") and detect violations.' },
               { name: 'Dead Code', weight: '15%', color: 'yellow', desc: 'Finds exported functions/types with zero callers across the entire codebase.' },
               { name: 'Test Coverage', weight: '15%', color: 'accent', desc: 'Reads coverage data from language-specific tools and factors it into the score.' },
@@ -395,6 +395,7 @@ import CopyButton from '../components/CopyButton.astro'
                 <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Go 1.21+</li>
                 <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> TypeScript / JavaScript</li>
                 <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Python, Rust, Java</li>
+                <li class="flex items-center gap-2"><span class="text-green text-xs">&#10003;</span> Ruby, PHP, C#</li>
               </ul>
             </div>
           </div>
@@ -415,7 +416,7 @@ import CopyButton from '../components/CopyButton.astro'
             {[
               {
                 q: 'drift says "no supported project found"',
-                a: 'drift looks for manifest files (go.mod, package.json, Cargo.toml, pyproject.toml, pom.xml) in the current directory. Make sure you\'re running drift from the project root, or set the language explicitly in .drift.yaml.',
+                a: 'drift looks for manifest files (go.mod, package.json, Cargo.toml, pyproject.toml, pom.xml, Gemfile, composer.json, *.csproj) in the current directory. Make sure you\'re running drift from the project root, or set the language explicitly in .drift.yaml.',
               },
               {
                 q: 'AI diagnosis says "no API key configured"',
