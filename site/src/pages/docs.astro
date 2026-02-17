@@ -93,6 +93,13 @@ import CopyButton from '../components/CopyButton.astro'
           <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Shell script</h3>
           <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> curl -fsSL https://raw.githubusercontent.com/greatnessinabox/drift/main/install.sh | sh</code></pre>
 
+          <p class="text-text-muted text-xs leading-relaxed mb-6 -mt-4">
+            On macOS, if you download drift manually from GitHub Releases, you may need to allow it in
+            <strong class="text-text">System Settings &rarr; Privacy &amp; Security</strong>
+            or run <code class="text-text text-xs bg-surface-2 px-1.5 py-0.5 rounded">xattr -d com.apple.quarantine $(which drift)</code>.
+            The Homebrew and shell script installers handle this automatically.
+          </p>
+
           <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Go install</h3>
           <pre class="bg-surface border border-border rounded-xl p-5 font-mono text-sm overflow-x-auto mb-6"><code><span class="text-green">$</span> go install github.com/greatnessinabox/drift/cmd/drift@latest</code></pre>
 
@@ -437,6 +444,10 @@ import CopyButton from '../components/CopyButton.astro'
               {
                 q: 'How do I update drift?',
                 a: 'Same way you installed it: brew upgrade drift, re-run the shell script, or go install ...@latest. Check the releases page for changelogs.',
+              },
+              {
+                q: 'macOS says "drift can\'t be opened" or is blocked by Gatekeeper',
+                a: 'Since drift isn\'t signed with an Apple Developer ID, macOS may block it. To fix: open System Settings \u2192 Privacy & Security, scroll to Security, and click "Allow Anyway" next to the drift message. Alternatively, run: xattr -d com.apple.quarantine $(which drift). The Homebrew and shell script installers handle this automatically.',
               },
             ].map(item => (
               <details class="bg-surface border border-border rounded-xl group">

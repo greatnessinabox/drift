@@ -80,6 +80,8 @@ cd drift
 go build ./cmd/drift/
 ```
 
+**macOS note:** If macOS blocks drift with a Gatekeeper warning, open **System Settings > Privacy & Security** and click **Allow Anyway**, or run `xattr -d com.apple.quarantine $(which drift)`.
+
 ## Quick Start
 
 ```bash

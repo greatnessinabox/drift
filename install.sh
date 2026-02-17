@@ -112,6 +112,11 @@ main() {
 
     chmod +x "$INSTALL_DIR/$BINARY"
 
+    # macOS: remove quarantine attribute to prevent Gatekeeper block
+    if [ "$OS" = "darwin" ]; then
+        xattr -d com.apple.quarantine "$INSTALL_DIR/$BINARY" 2>/dev/null || true
+    fi
+
     # Verify
     if "$INSTALL_DIR/$BINARY" --version > /dev/null 2>&1; then
         echo ""
