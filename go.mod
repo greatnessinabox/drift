@@ -11,7 +11,7 @@ require (
 	github.com/go-git/go-git/v5 v5.18.0
 	github.com/openai/openai-go v1.12.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/mod v0.35.0
+	golang.org/x/mod v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
