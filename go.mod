@@ -1,6 +1,6 @@
 module github.com/greatnessinabox/drift
 
-go 1.25.7
+go 1.25.11
 
 require (
 	github.com/anthropics/anthropic-sdk-go v1.46.0
@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/fsnotify/fsnotify v1.10.1
-	github.com/go-git/go-git/v5 v5.19.0
+	github.com/go-git/go-git/v5 v5.19.1
 	github.com/openai/openai-go v1.12.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/mod v0.36.0
