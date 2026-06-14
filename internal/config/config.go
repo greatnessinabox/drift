@@ -36,8 +36,9 @@ type BoundaryRule struct {
 }
 
 type AIConfig struct {
-	Provider string `yaml:"provider"` // "anthropic" or "openai"
-	Model    string `yaml:"model"`    // e.g. "claude-sonnet-4-5-20250929" or "gpt-4o"
+	Provider  string `yaml:"provider"`   // "anthropic" or "openai"
+	Model     string `yaml:"model"`      // e.g. "claude-sonnet-4-5-20250929" or "gpt-4o"
+	MaxTokens int    `yaml:"max_tokens"` // response token budget per AI call
 }
 
 type ThresholdConfig struct {
@@ -69,8 +70,9 @@ func Defaults() *Config {
 			Coverage:   0.15,
 		},
 		AI: AIConfig{
-			Provider: "anthropic",
-			Model:    "claude-sonnet-4-5-20250929",
+			Provider:  "anthropic",
+			Model:     "claude-sonnet-4-5-20250929",
+			MaxTokens: 1024,
 		},
 		Thresholds: ThresholdConfig{
 			MaxComplexity: 15,

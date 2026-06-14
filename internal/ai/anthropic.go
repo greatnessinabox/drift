@@ -10,8 +10,9 @@ import (
 )
 
 type AnthropicProvider struct {
-	client *anthropic.Client
-	model  anthropic.Model
+	client    *anthropic.Client
+	model     anthropic.Model
+	maxTokens int64
 }
 
 func NewAnthropicProvider(cfg config.AIConfig) (*AnthropicProvider, error) {
@@ -28,8 +29,9 @@ func NewAnthropicProvider(cfg config.AIConfig) (*AnthropicProvider, error) {
 	}
 
 	return &AnthropicProvider{
-		client: &client,
-		model:  model,
+		client:    &client,
+		model:     model,
+		maxTokens: maxTokensOrDefault(cfg.MaxTokens),
 	}, nil
 }
 
@@ -40,7 +42,7 @@ func (p *AnthropicProvider) Name() string {
 func (p *AnthropicProvider) Diagnose(ctx context.Context, prompt string) (string, error) {
 	resp, err := p.client.Messages.New(ctx, anthropic.MessageNewParams{
 		Model:     p.model,
-		MaxTokens: 1024,
+		MaxTokens: p.maxTokens,
 		Messages: []anthropic.MessageParam{
 			anthropic.NewUserMessage(anthropic.NewTextBlock(prompt)),
 		},

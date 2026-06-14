@@ -23,3 +23,11 @@ func NewProvider(cfg config.AIConfig) (Provider, error) {
 		return nil, fmt.Errorf("unknown AI provider: %q (supported: anthropic, openai)", cfg.Provider)
 	}
 }
+
+// maxTokensOrDefault falls back to a sane response budget when none is configured.
+func maxTokensOrDefault(n int) int64 {
+	if n <= 0 {
+		return 1024
+	}
+	return int64(n)
+}

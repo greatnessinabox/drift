@@ -10,8 +10,9 @@ import (
 )
 
 type OpenAIProvider struct {
-	client *openai.Client
-	model  string
+	client    *openai.Client
+	model     string
+	maxTokens int64
 }
 
 func NewOpenAIProvider(cfg config.AIConfig) (*OpenAIProvider, error) {
@@ -28,8 +29,9 @@ func NewOpenAIProvider(cfg config.AIConfig) (*OpenAIProvider, error) {
 	}
 
 	return &OpenAIProvider{
-		client: &client,
-		model:  model,
+		client:    &client,
+		model:     model,
+		maxTokens: maxTokensOrDefault(cfg.MaxTokens),
 	}, nil
 }
 
@@ -44,7 +46,7 @@ func (p *OpenAIProvider) Diagnose(ctx context.Context, prompt string) (string, e
 			openai.SystemMessage("You are a code health analyst. Analyze the codebase metrics provided and give actionable, concise recommendations. Focus on the most impactful issues first. Be specific about file names and function names. Keep your response under 500 words."),
 			openai.UserMessage(prompt),
 		},
-		MaxCompletionTokens: openai.Int(1024),
+		MaxCompletionTokens: openai.Int(p.maxTokens),
 	})
 	if err != nil {
 		return "", fmt.Errorf("openai API error: %w", err)
