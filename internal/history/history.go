@@ -1,3 +1,4 @@
+// Package history reconstructs health-score trends by analyzing past git commits.
 package history
 
 import (

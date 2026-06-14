@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/greatnessinabox/drift/actions/workflows/ci.yml/badge.svg)](https://github.com/greatnessinabox/drift/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/greatnessinabox/drift)](https://github.com/greatnessinabox/drift)
+[![Go Reference](https://pkg.go.dev/badge/github.com/greatnessinabox/drift.svg)](https://pkg.go.dev/github.com/greatnessinabox/drift)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/greatnessinabox/drift)](https://github.com/greatnessinabox/drift/releases)
 

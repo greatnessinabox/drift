@@ -1,3 +1,4 @@
+// Package watcher monitors the filesystem and emits debounced change events for source files.
 package watcher
 
 import (

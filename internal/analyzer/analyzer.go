@@ -1,3 +1,4 @@
+// Package analyzer performs multi-language static analysis of complexity, dependencies, boundary violations, and dead code.
 package analyzer
 
 import (

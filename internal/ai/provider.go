@@ -1,3 +1,4 @@
+// Package ai abstracts AI providers and builds prompts to diagnose codebase health issues.
 package ai
 
 import (
