@@ -1,4 +1,8 @@
-// Package health computes weighted codebase health scores from analyzer results.
+// Package health computes a weighted codebase health score from analyzer
+// results. Each metric (complexity, deps, boundaries, dead code, coverage) is
+// scored 0-100, then combined as a weighted average using cfg.Weights. Weights
+// are renormalized over the metrics actually present, so a missing metric (e.g.
+// coverage with no lcov.info report) neither inflates nor tanks the total.
 package health
 
 import (
@@ -9,13 +13,14 @@ import (
 )
 
 type Score struct {
-	Total      float64
-	Complexity float64
-	Deps       float64
-	Boundaries float64
-	DeadCode   float64
-	Coverage   float64
-	Delta      float64
+	Total            float64
+	Complexity       float64
+	Deps             float64
+	Boundaries       float64
+	DeadCode         float64
+	Coverage         float64
+	CoverageMeasured bool
+	Delta            float64
 }
 
 type Scorer struct {
@@ -33,16 +38,28 @@ func (s *Scorer) Calculate(r *analyzer.Results) Score {
 		Deps:       s.depsScore(r),
 		Boundaries: s.boundariesScore(r),
 		DeadCode:   s.deadCodeScore(r),
-		Coverage:   100, // not yet implemented
 	}
 
 	w := s.cfg.Weights
-	score.Total = score.Complexity*w.Complexity +
+	weightedSum := score.Complexity*w.Complexity +
 		score.Deps*w.Deps +
 		score.Boundaries*w.Boundaries +
-		score.DeadCode*w.DeadCode +
-		score.Coverage*w.Coverage
+		score.DeadCode*w.DeadCode
+	totalWeight := w.Complexity + w.Deps + w.Boundaries + w.DeadCode
 
+	// Coverage only counts when an lcov report was found. Otherwise the
+	// remaining weights are renormalized so the score isn't inflated by an
+	// assumed-perfect metric.
+	if r.Coverage.Measured {
+		score.Coverage = r.Coverage.Percent
+		score.CoverageMeasured = true
+		weightedSum += score.Coverage * w.Coverage
+		totalWeight += w.Coverage
+	}
+
+	if totalWeight > 0 {
+		score.Total = weightedSum / totalWeight
+	}
 	score.Total = math.Round(score.Total*10) / 10
 
 	if s.previous >= 0 {

@@ -14,13 +14,34 @@ func newScorer() *Scorer {
 func TestCalculate_PerfectScore(t *testing.T) {
 	got := newScorer().Calculate(&analyzer.Results{})
 
+	// Coverage is excluded when unmeasured; the rest renormalize to 100.
 	for name, v := range map[string]float64{
 		"Total": got.Total, "Complexity": got.Complexity, "Deps": got.Deps,
-		"Boundaries": got.Boundaries, "DeadCode": got.DeadCode, "Coverage": got.Coverage,
+		"Boundaries": got.Boundaries, "DeadCode": got.DeadCode,
 	} {
 		if v != 100 {
 			t.Errorf("empty results: %s = %v, want 100", name, v)
 		}
+	}
+	if got.CoverageMeasured {
+		t.Error("empty results: CoverageMeasured = true, want false")
+	}
+}
+
+func TestCalculate_CoverageMeasured(t *testing.T) {
+	// Structural metrics perfect (sum weight 0.85), coverage measured at 50%
+	// (weight 0.15): total = (100*0.85 + 50*0.15) / 1.0 = 92.5.
+	r := &analyzer.Results{Coverage: analyzer.Coverage{Percent: 50, Measured: true}}
+	got := newScorer().Calculate(r)
+
+	if !got.CoverageMeasured {
+		t.Fatal("CoverageMeasured = false, want true")
+	}
+	if got.Coverage != 50 {
+		t.Errorf("Coverage = %v, want 50", got.Coverage)
+	}
+	if !approx(got.Total, 92.5) {
+		t.Errorf("Total = %v, want 92.5", got.Total)
 	}
 }
 
