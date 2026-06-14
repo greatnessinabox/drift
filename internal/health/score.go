@@ -1,3 +1,4 @@
+// Package health computes weighted codebase health scores from analyzer results.
 package health
 
 import (

@@ -1,3 +1,5 @@
+// Command drift is a real-time, multi-language codebase health monitor with an
+// interactive TUI, CI-friendly reporting, and AI-assisted diagnosis.
 package main
 
 import (

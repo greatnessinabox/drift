@@ -1,3 +1,4 @@
+// Package config loads and provides drift's YAML configuration and its defaults.
 package config
 
 import (

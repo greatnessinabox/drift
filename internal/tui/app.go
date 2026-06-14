@@ -1,3 +1,4 @@
+// Package tui renders drift's interactive, full-screen terminal health dashboard.
 package tui
 
 import (
