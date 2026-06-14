@@ -12,6 +12,7 @@ type Results struct {
 	Dependencies []DepStatus
 	Violations   []BoundaryViolation
 	DeadCode     []DeadFunction
+	Coverage     Coverage
 	FileCount    int
 	FuncCount    int
 	Language     Language
@@ -58,6 +59,7 @@ func (a *Analyzer) Run() (*Results, error) {
 
 	results.Violations = a.lang.AnalyzeImports(files, a.cfg.Boundaries, a.cfg.Root)
 	results.DeadCode = a.lang.AnalyzeDeadCode(files)
+	results.Coverage = readCoverage(a.cfg.Root)
 
 	sortComplexityDesc(results.Complexity)
 
