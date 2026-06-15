@@ -39,3 +39,15 @@ func TestReadCoverage_MalformedLine(t *testing.T) {
 		t.Errorf("got %+v, want {Percent:50 Measured:true}", cov)
 	}
 }
+
+func TestReadCoverage_GoCoverProfile(t *testing.T) {
+	dir := t.TempDir()
+	// Go profile: "file:s.c,e.c numStmts count". 4 covered of 10 total = 40%.
+	prof := "mode: set\nx/a.go:1.1,3.2 4 1\nx/b.go:5.1,6.2 6 0\n"
+	if err := os.WriteFile(filepath.Join(dir, "coverage.out"), []byte(prof), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if cov := readCoverage(dir); !cov.Measured || cov.Percent != 40 {
+		t.Errorf("got %+v, want {Percent:40 Measured:true}", cov)
+	}
+}
