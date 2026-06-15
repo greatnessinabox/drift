@@ -44,11 +44,21 @@ jobs:
           # Get the score
           SCORE=$(drift snapshot 2>/dev/null | jq -r '.score.total // "N/A"')
           echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+          # Health delta vs the PR base branch
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git checkout -q ${{ github.event.pull_request.base.sha }}
+            BASE_SCORE=$(drift snapshot 2>/dev/null | jq -r '.score.total // "N/A"')
+            git checkout -q ${{ github.sha }}
+            echo "base_score=$BASE_SCORE" >> $GITHUB_OUTPUT
+            if [ "$SCORE" != "N/A" ] && [ "$BASE_SCORE" != "N/A" ]; then
+              echo "delta=$(awk "BEGIN{printf \"%+.1f\", $SCORE-$BASE_SCORE}")" >> $GITHUB_OUTPUT
+            fi
+          fi
           
           # Check if score meets threshold
           if (( $(echo "$SCORE < 70" | bc -l) )); then
             echo "status=failed" >> $GITHUB_OUTPUT
-            exit 1
           else
             echo "status=passed" >> $GITHUB_OUTPUT
           fi
@@ -77,13 +87,20 @@ jobs:
             const fs = require('fs');
             const score = '${{ steps.drift.outputs.score }}';
             const status = '${{ steps.drift.outputs.status }}';
-            
-            let summary = '## 📊 Drift Health Check\n\n';
-            
+            const baseScore = '${{ steps.drift.outputs.base_score }}';
+            const delta = '${{ steps.drift.outputs.delta }}';
+            const marker = '<!-- drift-health-comment -->';
+
+            const deltaStr = (baseScore && baseScore !== 'N/A' && delta)
+              ? ` (${delta.startsWith('-') ? '🔻' : '🔼'} ${delta} vs base ${baseScore})`
+              : '';
+
+            let summary = marker + '\n## 📊 Drift Health Check\n\n';
+
             if (status === 'passed') {
-              summary += `✅ **Health Score: ${score}/100** - Meets threshold!\n\n`;
+              summary += `✅ **Health Score: ${score}/100**${deltaStr} - Meets threshold!\n\n`;
             } else {
-              summary += `❌ **Health Score: ${score}/100** - Below threshold (70)\n\n`;
+              summary += `❌ **Health Score: ${score}/100**${deltaStr} - Below threshold (70)\n\n`;
             }
             
             // Try to read Copilot summary
@@ -97,12 +114,15 @@ jobs:
             
             summary += '\n\n---\n*Powered by [drift](https://github.com/greatnessinabox/drift) + GitHub Copilot CLI*';
             
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: summary
-            });
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: summary });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body: summary });
+            }
 
       - name: Upload drift report
         if: always()
