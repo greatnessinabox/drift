@@ -176,6 +176,7 @@ Example:
 func newFixCmd() *cobra.Command {
 	var interactive bool
 	var limit int
+	var batch bool
 
 	cmd := &cobra.Command{
 		Use:   "fix",
@@ -191,6 +192,7 @@ Requires GitHub Copilot CLI to be installed (any one of):
 Example:
   drift fix                    # Interactive mode
   drift fix --limit 3          # Fix top 3 issues only
+  drift fix --batch            # Generate all suggestions, write one review plan
   drift fix --non-interactive  # Show suggestions without prompting`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load(cfgFile)
@@ -207,17 +209,23 @@ Example:
 			scorer := health.NewScorer(cfg)
 			score := scorer.Calculate(results)
 
-			return runFixWorkflow(cfg, score, results, interactive, limit)
+			// --batch plans the full issue list unless an explicit limit was set.
+			if batch && !cmd.Flags().Changed("limit") {
+				limit = 0
+			}
+
+			return runFixWorkflow(cfg, score, results, interactive, limit, batch)
 		},
 	}
 
 	cmd.Flags().BoolVarP(&interactive, "interactive", "i", true, "Prompt for each fix (use --non-interactive to disable)")
 	cmd.Flags().IntVarP(&limit, "limit", "n", 5, "Maximum number of issues to fix")
+	cmd.Flags().BoolVar(&batch, "batch", false, "Generate all suggestions up front and write a single review plan")
 
 	return cmd
 }
 
-func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Results, interactive bool, limit int) error {
+func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Results, interactive bool, limit int, batch bool) error {
 	// Check if copilot CLI is available
 	if !isCopilotAvailable() {
 		fmt.Println("❌ GitHub Copilot CLI not found")
@@ -236,7 +244,7 @@ func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Re
 
 	// Add complexity issues
 	for i, fc := range results.Complexity {
-		if i >= limit {
+		if limit > 0 && i >= limit {
 			break
 		}
 		if fc.Complexity > cfg.Thresholds.MaxComplexity {
@@ -263,6 +271,10 @@ func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Re
 	}
 
 	fmt.Println()
+
+	if batch {
+		return runBatchFix(cfg, issues)
+	}
 
 	// Process each issue
 	for i, issue := range issues {
@@ -309,6 +321,53 @@ func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Re
 	fmt.Println("💡 Run 'drift report' to see updated health metrics")
 
 	return nil
+}
+
+type fixSuggestion struct {
+	issue      fixIssue
+	suggestion string
+	err        error
+}
+
+// runBatchFix generates every suggestion up front, then writes one consolidated
+// review surface instead of prompting per issue — the plan-then-apply flow for
+// reviewing many AI runs at once.
+func runBatchFix(cfg *config.Config, issues []fixIssue) error {
+	fmt.Printf("🤖 Generating %d suggestion(s) up front...\n\n", len(issues))
+
+	// ponytail: serial fetch; parallelize with bounded goroutines if latency bites.
+	plan := make([]fixSuggestion, len(issues))
+	for i, issue := range issues {
+		fmt.Printf("  [%d/%d] %s\n", i+1, len(issues), issue.Description)
+		s, err := getCopilotSuggestion(cfg, issue)
+		plan[i] = fixSuggestion{issue: issue, suggestion: s, err: err}
+	}
+
+	md := renderFixPlan(plan)
+
+	outFile := filepath.Join(cfg.Root, "drift-fixes.md")
+	if err := os.WriteFile(outFile, []byte(md), 0o644); err != nil {
+		return fmt.Errorf("writing fix plan: %w", err)
+	}
+
+	fmt.Print("\n" + md)
+	fmt.Printf("📄 Fix plan written to %s — review all suggestions, then apply.\n", outFile)
+	return nil
+}
+
+// renderFixPlan turns the batch results into a single Markdown review surface.
+func renderFixPlan(plan []fixSuggestion) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# drift fix plan (%d issue(s))\n\n", len(plan))
+	for i, p := range plan {
+		fmt.Fprintf(&b, "## %d. %s\n\n", i+1, p.issue.Description)
+		if p.err != nil {
+			fmt.Fprintf(&b, "_Could not generate a suggestion: %v_\n\n", p.err)
+			continue
+		}
+		fmt.Fprintf(&b, "%s\n\n", p.suggestion)
+	}
+	return b.String()
 }
 
 type fixIssue struct {
