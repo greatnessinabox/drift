@@ -37,12 +37,18 @@ func readCoverage(root string) Coverage {
 		line := sc.Text()
 		switch {
 		case strings.HasPrefix(line, "LF:"):
-			n, _ := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(line, "LF:")))
-			found += n
+			if n, err := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(line, "LF:"))); err == nil {
+				found += n
+			}
 		case strings.HasPrefix(line, "LH:"):
-			n, _ := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(line, "LH:")))
-			hit += n
+			if n, err := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(line, "LH:"))); err == nil {
+				hit += n
+			}
 		}
+	}
+	// A failed read is reported as unmeasured rather than as partial coverage.
+	if err := sc.Err(); err != nil {
+		return Coverage{}
 	}
 	if found == 0 {
 		return Coverage{}

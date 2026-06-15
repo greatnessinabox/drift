@@ -27,3 +27,15 @@ func TestReadCoverage_NoReport(t *testing.T) {
 		t.Error("Measured = true with no report, want false")
 	}
 }
+
+func TestReadCoverage_MalformedLine(t *testing.T) {
+	dir := t.TempDir()
+	// A non-numeric LF line must be skipped, not counted as zero.
+	lcov := "SF:foo.go\nLF:10\nLH:5\nLF:bogus\nend_of_record\n"
+	if err := os.WriteFile(filepath.Join(dir, "lcov.info"), []byte(lcov), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if cov := readCoverage(dir); !cov.Measured || cov.Percent != 50 { // 5/10, bogus ignored
+		t.Errorf("got %+v, want {Percent:50 Measured:true}", cov)
+	}
+}
