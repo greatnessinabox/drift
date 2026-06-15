@@ -209,6 +209,11 @@ Example:
 			scorer := health.NewScorer(cfg)
 			score := scorer.Calculate(results)
 
+			// --batch plans the full issue list unless an explicit limit was set.
+			if batch && !cmd.Flags().Changed("limit") {
+				limit = 0
+			}
+
 			return runFixWorkflow(cfg, score, results, interactive, limit, batch)
 		},
 	}
@@ -239,7 +244,7 @@ func runFixWorkflow(cfg *config.Config, score health.Score, results *analyzer.Re
 
 	// Add complexity issues
 	for i, fc := range results.Complexity {
-		if i >= limit {
+		if limit > 0 && i >= limit {
 			break
 		}
 		if fc.Complexity > cfg.Thresholds.MaxComplexity {
@@ -340,7 +345,7 @@ func runBatchFix(cfg *config.Config, issues []fixIssue) error {
 
 	md := renderFixPlan(plan)
 
-	const outFile = "drift-fixes.md"
+	outFile := filepath.Join(cfg.Root, "drift-fixes.md")
 	if err := os.WriteFile(outFile, []byte(md), 0o644); err != nil {
 		return fmt.Errorf("writing fix plan: %w", err)
 	}
