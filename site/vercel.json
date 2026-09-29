@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "astro",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- .",
   "git": {
     "deploymentEnabled": {
       "dependabot/**": false
